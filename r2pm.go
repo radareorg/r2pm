@@ -18,7 +18,6 @@ var R2PM_DIR string
 var R2PM_GITDIR string
 var R2PM_DB string
 var DBFILE string
-var WD string
 
 /* Utils functions */
 func getenv(key, fallback string) string {
@@ -144,8 +143,6 @@ func main() {
 	R2PM_GITDIR = getenv("R2PM_GITDIR", path.Join(r2pmdir, "git"))
 	R2PM_DB = getenv("R2PM_DB", path.Join(R2PM_GITDIR, "radare2-pm", "db"))
 	DBFILE = path.Join(R2PM_DIR, "db.json")
-	WD, err := os.Getwd()
-	check(err)
 
 	// Parse arguments
 	versionPtr := flag.Bool("v", false, "Show r2pm version")
