@@ -6,7 +6,7 @@ framework radare2.
 This tool is still a work in progress.
 
 ## Package example
-```
+```json
 {
 "name": "swf2",
 "type": "git",
