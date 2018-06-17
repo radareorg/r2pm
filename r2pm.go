@@ -11,6 +11,7 @@ import "io/ioutil"
 import "strconv"
 import "path/filepath"
 import "encoding/json"
+import "errors"
 
 const VERSION string = "1.0"
 const R2PM_LOCAL string = ".local/share/radare2/r2pm"
@@ -41,7 +42,11 @@ func check(e error) {
 
 func isDirectory(path string) (bool, error) {
 	fileInfo, err := os.Stat(path)
-	return fileInfo.IsDir(), err
+	if err != nil {
+		return false, err
+	}
+	isDir := fileInfo.IsDir() == true
+	return isDir, nil
 }
 
 func stringInSlice(a string, list []string) bool {
@@ -51,6 +56,10 @@ func stringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
+}
+
+func caseInsenstiveContains(a, b string) bool {
+	return strings.Contains(strings.ToUpper(a), strings.ToUpper(b))
 }
 
 func gitClone(repoPath string, repoUrl string, args ...string) {
@@ -91,6 +100,11 @@ func getPackagesList() []string {
 
 func getPackageInfo(pkg string) (PackageInfo, error) {
 	var file string
+	// Empty name, return empty
+	if pkg == "" {
+		return PackageInfo{}, errors.New("Package name invalid")
+	}
+
 	// If the name contains a file separator, it's surely the full path
 	idx := strings.Index(pkg, string(os.PathSeparator))
 	if idx >= 0 {
@@ -105,6 +119,7 @@ func getPackageInfo(pkg string) (PackageInfo, error) {
 	if err != nil {
 		return PackageInfo{}, err
 	}
+
 	return pinfo, err
 }
 
@@ -121,10 +136,14 @@ func r2pmInit() {
 	gitClone(repoPath, repoUrl, "--depth=3", "--recursive")
 
 	// Initialize database
-	packageRepo := path.Join(R2PM_DB, "db")
 	var validPackages []string
-	err := filepath.Walk(packageRepo, func(file string, info os.FileInfo, err error) error {
-		dir, _ := isDirectory(file)
+	err := filepath.Walk(R2PM_DB, func(file string, info os.FileInfo, err error) error {
+		dir, err := isDirectory(file)
+		if err != nil {
+			fmt.Println(err)
+			return nil
+		}
+
 		if dir {
 			return nil
 		}
@@ -158,7 +177,7 @@ func r2pmInfo() {
 	packagesList := getPackagesList()
 	packagesNumber := strconv.Itoa(len(packagesList))
 
-	fmt.Println("# " + packagesNumber + " Packages")
+	fmt.Println("There are " + packagesNumber + " packages available.")
 	fmt.Println("# Installed:")
 	fmt.Println("TODO")
 }
@@ -202,6 +221,33 @@ func r2pmInstall(pkg string) bool {
 	return true
 }
 
+func r2pmSearch(pkg string) bool {
+	packagesList := getPackagesList()
+	anyFound := false
+
+	headMsg := "List of packages: "
+	if pkg != "" {
+		headMsg += "(filter: " + pkg + ")"
+	}
+	fmt.Println(headMsg)
+	for _, pkgname := range packagesList {
+		pinfo, err := getPackageInfo(pkgname)
+		if err != nil {
+			continue
+		}
+		if !caseInsenstiveContains(pinfo.Name, pkg) && !caseInsenstiveContains(pinfo.Desc, pkg) {
+			continue
+		}
+		fmt.Println(pinfo.Name + "\t\t" + pinfo.Desc)
+		anyFound = true
+	}
+	if !anyFound {
+		fmt.Println("No packages found.")
+	}
+
+	return true
+}
+
 func main() {
 	// Initialize environment variables
 	var r2pmdir string
@@ -219,6 +265,7 @@ func main() {
 	versionPtr := flag.Bool("v", false, "Show r2pm version")
 	initPtr := flag.Bool("init", false, "Init the repository")
 	infoPtr := flag.Bool("i", false, "Show information")
+	searchPtr := flag.Bool("s", false, "Search into database")
 	flag.Parse()
 
 	if *versionPtr == true {
@@ -236,6 +283,15 @@ func main() {
 			r2pmInstall(flag.Args()[0])
 		} else {
 			r2pmInfo()
+		}
+		return
+	}
+
+	if *searchPtr == true {
+		if len(flag.Args()) == 1 {
+			r2pmSearch(flag.Args()[0])
+		} else {
+			r2pmSearch("")
 		}
 		return
 	}
