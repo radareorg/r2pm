@@ -196,6 +196,7 @@ func r2pmInstall(pkg string) bool {
 	var newdir string
 	if pinfo.Type == "git" {
 		repoPath := path.Join(R2PM_GITDIR, filepath.Base(pinfo.Repo))
+		newdir = repoPath
 		gitClone(repoPath, pinfo.Repo)
 	}
 	fmt.Println("Entering " + newdir)
