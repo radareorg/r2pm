@@ -149,7 +149,7 @@ func r2pmInit() {
 		}
 
 		// Read file content and parse it
-		pinfo, err := getPackageInfo(file)
+		_, err = getPackageInfo(file)
 		if err != nil {
 			return nil
 		}
