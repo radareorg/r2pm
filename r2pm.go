@@ -137,7 +137,7 @@ func r2pmInit() {
 
 	// Check if radare2-pm was already cloned
 	repoPath := path.Join(R2PM_GITDIR, "radare2-pm")
-	repoUrl := "https://github.com/radare/radare2-pm"
+	repoUrl := "https://github.com/radareorg/r2pm-db"
 	gitClone(repoPath, repoUrl, "--depth=3", "--recursive")
 
 	// Initialize database
