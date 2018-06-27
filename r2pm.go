@@ -136,7 +136,7 @@ func r2pmInit() {
 	}
 
 	// Check if radare2-pm was already cloned
-	repoPath := path.Join(R2PM_GITDIR, "radare2-pm")
+	repoPath := path.Join(R2PM_GITDIR, "r2pm-db")
 	repoUrl := "https://github.com/radareorg/r2pm-db"
 	gitClone(repoPath, repoUrl, "--depth=3", "--recursive")
 
@@ -284,7 +284,7 @@ func main() {
 	}
 	R2PM_DIR = getenv("R2PM_DIR", r2pmdir)
 	R2PM_GITDIR = getenv("R2PM_GITDIR", path.Join(r2pmdir, "git"))
-	R2PM_DB = getenv("R2PM_DB", path.Join(R2PM_GITDIR, "radare2-pm", "db"))
+	R2PM_DB = getenv("R2PM_DB", path.Join(R2PM_GITDIR, "r2pm-db", "db"))
 	DBFILE = path.Join(R2PM_DIR, "db.json")
 
 	// Parse arguments
