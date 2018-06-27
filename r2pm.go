@@ -102,7 +102,7 @@ func getPackageInfo(pkg string) (PackageInfo, error) {
 	var file string
 	// Empty name, return empty
 	if pkg == "" {
-		return PackageInfo{}, errors.New("Package name invalid")
+		return PackageInfo{}, errors.New("Package name invalid.")
 	}
 
 	// If the name contains a file separator, it's surely the full path
@@ -113,7 +113,9 @@ func getPackageInfo(pkg string) (PackageInfo, error) {
 		file = path.Join(R2PM_DB, pkg)
 	}
 	dat, err := ioutil.ReadFile(file)
-	check(err)
+	if err != nil {
+		fmt.Println("Package '" + pkg + "' not found.")
+	}
 	pinfo := PackageInfo{}
 	err = json.Unmarshal([]byte(dat), &pinfo)
 	if err != nil {
@@ -149,13 +151,17 @@ func r2pmInit() {
 		}
 
 		// Read file content and parse it
-		_, err = getPackageInfo(file)
+		pinfo, err := getPackageInfo(file)
 		if err != nil {
 			return nil
 		}
 
 		// Validate package
-		validPackages = append(validPackages, file)
+		if (pinfo.Name != filepath.Base(file)) {
+			fmt.Println("Invalid package name in '" + file + "': '" + pinfo.Name + "'")
+			return nil
+		}
+		validPackages = append(validPackages, pinfo.Name)
 
 		return nil
 	})
@@ -179,14 +185,6 @@ func r2pmInfo() {
 }
 
 func r2pmInstall(pkg string) bool {
-	packagesList := getPackagesList()
-
-	// Check if the package is valid
-	if stringInSlice(pkg, packagesList) == false {
-		fmt.Println("Package " + pkg + " not found!")
-		return false
-	}
-
 	// Get package information
 	pinfo, err := getPackageInfo(pkg)
 	check(err)
@@ -203,6 +201,35 @@ func r2pmInstall(pkg string) bool {
 	// Install
 	fmt.Println("Installing " + pkg + "...")
 	for _, command := range pinfo.Install {
+		fmt.Println(command)
+		commandArgs := strings.Fields(command)
+		prog := commandArgs[0]
+		if prog == "cd" {
+			os.Chdir(commandArgs[1])
+			continue
+		}
+		commandArgs = commandArgs[1:]
+		cmd := exec.Command(prog, commandArgs...)
+		_, err := cmd.Output()
+		check(err)
+	}
+	return true
+}
+
+func r2pmUninstall(pkg string) bool {
+	// Get package information
+	pinfo, err := getPackageInfo(pkg)
+	check(err)
+
+	// Go into package folder
+	dir := path.Join(R2PM_GITDIR, filepath.Base(pinfo.Repo))
+	fmt.Println("Entering " + dir)
+	os.Chdir(dir)
+
+	// Uninstall
+	fmt.Println("Uninstalling " + pkg + "...")
+	for _, command := range pinfo.Uninstall {
+		fmt.Println(command)
 		commandArgs := strings.Fields(command)
 		prog := commandArgs[0]
 		if prog == "cd" {
@@ -260,7 +287,8 @@ func main() {
 	// Parse arguments
 	versionPtr := flag.Bool("v", false, "Show r2pm version")
 	initPtr := flag.Bool("init", false, "Init the repository")
-	infoPtr := flag.Bool("i", false, "Show information")
+	infoPtr := flag.Bool("i", false, "Show information or install a package")
+	uninstallPtr := flag.Bool("u", false, "Uninstall a package")
 	searchPtr := flag.Bool("s", false, "Search into database")
 	flag.Parse()
 
@@ -279,6 +307,15 @@ func main() {
 			r2pmInstall(flag.Args()[0])
 		} else {
 			r2pmInfo()
+		}
+		return
+	}
+
+	if *uninstallPtr == true {
+		if len(flag.Args()) != 1 {
+			fmt.Println("No package name specified!")
+		} else {
+			r2pmUninstall(flag.Args()[0])
 		}
 		return
 	}
