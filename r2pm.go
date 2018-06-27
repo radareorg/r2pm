@@ -58,7 +58,7 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
-func caseInsenstiveContains(a, b string) bool {
+func caseInsensitiveContains(a, b string) bool {
 	return strings.Contains(strings.ToUpper(a), strings.ToUpper(b))
 }
 
@@ -155,11 +155,7 @@ func r2pmInit() {
 		}
 
 		// Validate package
-		if pinfo.Name != filepath.Base(file) {
-			fmt.Println("Invalid package name in '" + file + "': '" + pinfo.Name + "'")
-			return nil
-		}
-		validPackages = append(validPackages, pinfo.Name)
+		validPackages = append(validPackages, file)
 
 		return nil
 	})
@@ -225,7 +221,7 @@ func r2pmSearch(pkg string) bool {
 	packagesList := getPackagesList()
 	anyFound := false
 
-	headMsg := "List of packages: "
+	headMsg := "List of available packages: "
 	if pkg != "" {
 		headMsg += "(filter: " + pkg + ")"
 	}
@@ -235,7 +231,7 @@ func r2pmSearch(pkg string) bool {
 		if err != nil {
 			continue
 		}
-		if !caseInsenstiveContains(pinfo.Name, pkg) && !caseInsenstiveContains(pinfo.Desc, pkg) {
+		if !caseInsensitiveContains(pinfo.Name, pkg) && !caseInsensitiveContains(pinfo.Desc, pkg) {
 			continue
 		}
 		fmt.Println(pinfo.Name + "\t\t" + pinfo.Desc)
