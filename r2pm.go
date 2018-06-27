@@ -1,17 +1,20 @@
 package main
 
-import "flag"
-import "fmt"
-import "strings"
-import "os"
-import "os/exec"
-import "runtime"
-import "path"
-import "io/ioutil"
-import "strconv"
-import "path/filepath"
-import "encoding/json"
-import "errors"
+import (
+	"flag"
+	"fmt"
+	"strings"
+	"os"
+	"os/exec"
+	"runtime"
+	"path"
+	"io/ioutil"
+	"strconv"
+	"path/filepath"
+	"errors"
+	"encoding/json"
+	"gopkg.in/yaml.v2"
+)
 
 const VERSION string = "1.0"
 const R2PM_LOCAL string = ".local/share/radare2/r2pm"
@@ -82,12 +85,12 @@ func gitClone(repoPath string, repoUrl string, args ...string) {
 
 /* R2PM utils */
 type PackageInfo struct {
-	Name      string   `json:"name"`
-	Type      string   `json:"type"`
-	Repo      string   `json:"repo"`
-	Desc      string   `json:"desc"`
-	Install   []string `json:"install"`
-	Uninstall []string `json:"uninstall"`
+	Name      string   `yaml:"name"`
+	Type      string   `yaml:"type"`
+	Repo      string   `yaml:"repo"`
+	Desc      string   `yaml:"desc"`
+	Install   []string `yaml:"install"`
+	Uninstall []string `yaml:"uninstall"`
 }
 
 func getPackagesList() []string {
@@ -117,7 +120,7 @@ func getPackageInfo(pkg string) (PackageInfo, error) {
 		fmt.Println("Package '" + pkg + "' not found.")
 	}
 	pinfo := PackageInfo{}
-	err = json.Unmarshal([]byte(dat), &pinfo)
+	err = yaml.Unmarshal([]byte(dat), &pinfo)
 	if err != nil {
 		return PackageInfo{}, err
 	}
