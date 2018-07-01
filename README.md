@@ -6,27 +6,18 @@ framework radare2.
 This tool is still a work in progress.
 
 ## Package example
-```javascript
-{
-"name": "swf2",
-"type": "git",
-"repo": "https://github.com/radare/radare2-extras",
-"desc": "[r2-bin] SWF/Flash disassembler",
-"install": [
-  "./configure --prefix=\"${R2PM_PREFIX}\" || exit 1",
-  "cd libr/asm/p",
-  "${MAKE} clean",
-  "${MAKE} asm_swf.${LIBEXT} || exit 1",
-  "mkdir -p \"${R2PM_PLUGDIR}\" || exit 1",
-  "cp -f asm_swf.${LIBEXT} \"${R2PM_PLUGDIR}\" || exit 1",
-  "cd ../../bin/p || exit 1",
-  "${MAKE} bin_swf.${LIBEXT} || exit 1",
-  "echo cp -f bin_swf.${LIBEXT} \"${R2PM_PLUGDIR}\" || exit 1",
-  "cp -f bin_swf.${LIBEXT} \"${R2PM_PLUGDIR}\" || exit 1"
-],
-"uninstall": [
-  "rm -f \"${R2PM_PLUGDIR}\"/*swf*"
-]
-}
-```
 
+The official database is available [here](https://github.com/radareorg/r2pm-db).
+
+```yaml
+name: r2dec
+type: git
+repo: https://github.com/wargio/r2dec-js
+desc: "[r2-r2pipe-node] an Experimental Decompiler"
+
+install: 
+  - make -C p
+
+uninstall:
+- make -C p uninstall
+```
