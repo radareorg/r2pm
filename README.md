@@ -19,5 +19,6 @@ install:
   - make -C p
 
 uninstall:
-- make -C p uninstall
+  - make -C p uninstall
+
 ```
