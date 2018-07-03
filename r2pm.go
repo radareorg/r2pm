@@ -67,11 +67,11 @@ func caseInsensitiveContains(a, b string) bool {
 
 func gitClone(repoPath string, repoUrl string, args ...string) {
 	if _, err := os.Stat(repoPath); os.IsNotExist(err) {
-		os.Chdir(R2PM_GITDIR)
 		fmt.Println("Downloading repository...")
-		cmdArgs := []string{"clone", repoUrl} // + args
+		cmdArgs := append([]string{"clone", repoUrl}, args...)
+		cmdArgs = append(cmdArgs, repoPath)
 		cmd := exec.Command("git", cmdArgs...)
-		_, err := cmd.Output()
+		_, err := cmd.CombinedOutput()
 		check(err)
 		fmt.Println("Download complete.")
 	} else {
@@ -95,8 +95,11 @@ type PackageInfo struct {
 
 func getPackagesList() []string {
 	dat, err := ioutil.ReadFile(DBFILE)
-	check(err)
 	var packagesList []string
+	if err != nil {
+		fmt.Println("Could not read database file " + DBFILE + ". Did you initialize r2pm?")
+		return packagesList
+	}
 	json.Unmarshal(dat, &packagesList)
 	return packagesList
 }
@@ -176,12 +179,14 @@ func r2pmInit() {
 }
 
 func r2pmInfo() {
-	fmt.Println("# Repository Database:")
-
 	// Read database file
 	packagesList := getPackagesList()
+	if len(packagesList) == 0 {
+		return
+	}
 	packagesNumber := strconv.Itoa(len(packagesList))
 
+	fmt.Println("# Repository Database:")
 	fmt.Println("There are " + packagesNumber + " packages available.")
 	fmt.Println("# Installed:")
 	fmt.Println("TODO")
@@ -251,6 +256,10 @@ func r2pmUninstall(pkg string) bool {
 func r2pmSearch(pkg string) bool {
 	packagesList := getPackagesList()
 	anyFound := false
+
+	if len(packagesList) == 0 {
+		return false
+	}
 
 	headMsg := "List of available packages: "
 	if pkg != "" {
