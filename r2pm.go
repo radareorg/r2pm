@@ -97,7 +97,7 @@ func getPackagesList() []string {
 	dat, err := ioutil.ReadFile(DBFILE)
 	var packagesList []string
 	if err != nil {
-		fmt.Println("Could not read database file " + DBFILE + ". Did you initialize r2pm?")
+		fmt.Println("Could not read database file " + DBFILE + ". Did you initialize r2pm? (via r2pm init)")
 		return packagesList
 	}
 	json.Unmarshal(dat, &packagesList)
