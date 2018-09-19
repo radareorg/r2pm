@@ -126,6 +126,7 @@ func getPackageInfo(pkg string) (PackageInfo, error) {
 	dat, err := ioutil.ReadFile(file)
 	if err != nil {
 		fmt.Println("Package '" + pkg + "' not found.")
+		return PackageInfo{}, err
 	}
 	pinfo := PackageInfo{}
 	err = yaml.Unmarshal([]byte(dat), &pinfo)
@@ -211,7 +212,9 @@ func r2pmInfo() {
 func r2pmInstall(pkg string) bool {
 	// Get package information
 	pinfo, err := getPackageInfo(pkg)
-	check(err)
+	if (err != nil) {
+		return false
+	}
 
 	// Download content
 	var newdir string
