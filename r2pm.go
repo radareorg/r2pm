@@ -17,7 +17,6 @@ import (
 )
 
 const VERSION string = "1.0"
-const R2PM_LOCAL string = ".local/share/radare2/r2pm"
 
 var R2PM_DIR string
 var R2PM_GITDIR string
@@ -74,11 +73,13 @@ func gitClone(repoPath string, repoUrl string, args ...string) {
 		_, err := cmd.CombinedOutput()
 		check(err)
 		fmt.Println("Download complete.")
-	} else {
+	} else if err == nil {
 		fmt.Println("Repository already downloaded, updating...")
 		os.Chdir(repoPath)
 		cmd := exec.Command("git", "pull")
 		_, err := cmd.Output()
+		check(err)
+	} else {
 		check(err)
 	}
 }
@@ -97,8 +98,12 @@ func getPackagesList() []string {
 	dat, err := ioutil.ReadFile(DBFILE)
 	var packagesList []string
 	if err != nil {
-		fmt.Println("Could not read database file " + DBFILE + ". Did you initialize r2pm? (via r2pm init)")
-		return packagesList
+		r2pmInit()
+		dat, err = ioutil.ReadFile(DBFILE)
+		if err != nil {
+			fmt.Println("Could not read database file " + DBFILE + ". Did you initialize r2pm? (via r2pm -init)")
+			return packagesList
+		}
 	}
 	json.Unmarshal(dat, &packagesList)
 	return packagesList
@@ -135,7 +140,7 @@ func getPackageInfo(pkg string) (PackageInfo, error) {
 func r2pmInit() {
 	// Make sure git directory exists
 	if _, err := os.Stat(R2PM_GITDIR); os.IsNotExist(err) {
-		os.Mkdir(R2PM_GITDIR, 0)
+		os.MkdirAll(R2PM_GITDIR, 0755)
 	}
 
 	// Check if radare2-pm was already cloned
@@ -176,6 +181,17 @@ func r2pmInit() {
 	validPackagesJson, _ := json.Marshal(validPackages)
 	err = ioutil.WriteFile(DBFILE, validPackagesJson, 0644)
 	check(err)
+}
+
+func r2pmRemove() {
+	if _, err := os.Stat(R2PM_DIR); os.IsNotExist(err) {
+		return
+	}
+
+	err := os.RemoveAll(R2PM_DIR)
+	check(err)
+
+	fmt.Println("Deleted " + R2PM_DIR)
 }
 
 func r2pmInfo() {
@@ -290,7 +306,8 @@ func main() {
 	if isWindows() {
 		r2pmdir = getenv("APPDATA", "")
 	} else {
-		r2pmdir = path.Join(getenv("HOME", ""), R2PM_LOCAL)
+		// TODO Use XDG env variable and fallback to this
+		r2pmdir = path.Join(getenv("HOME", ""), ".local/share/radare2/r2pm")
 	}
 	R2PM_DIR = getenv("R2PM_DIR", r2pmdir)
 	R2PM_GITDIR = getenv("R2PM_GITDIR", path.Join(r2pmdir, "git"))
@@ -300,6 +317,7 @@ func main() {
 	// Parse arguments
 	versionPtr := flag.Bool("v", false, "Show r2pm version")
 	initPtr := flag.Bool("init", false, "Init the repository")
+	deletePtr := flag.Bool("delete", false, "Delete the whole local r2pm repository")
 	infoPtr := flag.Bool("i", false, "Show information or install a package")
 	uninstallPtr := flag.Bool("u", false, "Uninstall a package")
 	searchPtr := flag.Bool("s", false, "Search into database")
@@ -307,6 +325,11 @@ func main() {
 
 	if *versionPtr == true {
 		fmt.Println("r2pm " + VERSION)
+		return
+	}
+
+	if *deletePtr == true {
+		r2pmRemove()
 		return
 	}
 
@@ -341,4 +364,7 @@ func main() {
 		}
 		return
 	}
+
+	fmt.Println("No action given.")
+	flag.PrintDefaults();
 }
