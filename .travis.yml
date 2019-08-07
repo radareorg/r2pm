@@ -10,5 +10,4 @@ script:
   - go build
   - ./r2pm -init
   - ./r2pm -s r2dec | grep -c Decompiler
-  - ./r2pm -i r2dec
 
