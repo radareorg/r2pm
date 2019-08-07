@@ -1,6 +1,10 @@
 package r2package
 
-import "golang.org/x/xerrors"
+import (
+	"os"
+
+	"gopkg.in/yaml.v2"
+)
 
 type Info struct {
 	Name      string   `yaml:"name"`
@@ -12,5 +16,18 @@ type Info struct {
 }
 
 func FromFile(path string) (*Info, error) {
-	return nil, xerrors.New("not implemented")
+	fd, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer fd.Close()
+
+	d := yaml.NewDecoder(fd)
+	d.SetStrict(true)
+
+	info := &Info{}
+
+	err = d.Decode(&info)
+
+	return info, err
 }

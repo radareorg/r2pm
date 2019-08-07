@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"os/exec"
@@ -23,7 +24,7 @@ func Init(r2pmDir string) error {
 
 	repoDir := filepath.Join(r2pmDir, repoName)
 
-	// is dbDir already a git repository?
+	// is repoDir already a git repository?
 	cmdRepoExists := exec.Command(
 		"git",
 		"rev-parse",
@@ -44,6 +45,10 @@ func Init(r2pmDir string) error {
 
 		if err := runGit([]string{"reset", "--hard", "HEAD"}, repoDir); err != nil {
 			return xerrors.Errorf("could not reset the repo: %w", repoName, err)
+		}
+
+		if err := runGit([]string{"pull"}, repoDir); err != nil {
+			return xerrors.Errorf("could pull the latest revision: %w", repoName, err)
 		}
 	}
 
@@ -79,7 +84,15 @@ func Init(r2pmDir string) error {
 		return xerrors.Errorf("could not initialize the database: %w", err)
 	}
 
-	return xerrors.New("not implemented")
+	dbFile := filepath.Join(r2pmDir, "db.json")
+
+	fd, err := os.Create(dbFile)
+	if err != nil {
+		return xerrors.Errorf("could not open %s for writing: %w", dbFile, err)
+	}
+	defer fd.Close()
+
+	return json.NewEncoder(fd).Encode(validPackages)
 }
 
 func runGit(args []string, wd string) error {
