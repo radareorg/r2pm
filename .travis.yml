@@ -1,0 +1,14 @@
+language: go
+go:
+  - 1.12.x
+os:
+  - linux
+  - osx
+dist: trusty
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - go build
+  - ./r2pm -init
+  - ./r2pm -s r2dec | grep -c Decompiler
+  - ./r2pm -i r2dec
+
