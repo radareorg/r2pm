@@ -10,7 +10,7 @@ script:
   - go vet ./...
 
     # try building in the c-shared mode
-  - go build -o r2pm.so -buildmode=c-shared .
+  - go build -o r2pm.so -buildmode=c-shared ./lib
 
     # build as a Go program
   - go build
