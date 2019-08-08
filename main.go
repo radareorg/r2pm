@@ -1,5 +1,7 @@
 package main
 
+import "C"
+
 import (
 	"log"
 	"path"
@@ -10,6 +12,44 @@ import (
 	"github.com/radareorg/r2pm/pkg"
 	"github.com/radareorg/r2pm/pkg/database"
 )
+
+//export R2pmDelete
+func R2pmDelete(r2pmDir string) error {
+	return database.Delete(r2pmDir)
+}
+
+//export R2pmInit
+func R2pmInit(r2pmDir string) error {
+	return database.Init(r2pmDir)
+}
+
+//export R2PmInstall
+func R2PmInstall(r2pmDir, packageName string) error {
+	pi, err := database.FindPackage(r2pmDir, packageName)
+	if err != nil {
+		log.Fatalf("could not find package %s: %v", packageName, err)
+	}
+
+	if err := pi.Install(r2pmDir); err != nil {
+		log.Fatalf("could not install %s: %v", packageName, err)
+	}
+
+	return nil
+}
+
+//export R2PmUninstall
+func R2PmUninstall(r2pmDir, packageName string) error {
+	pi, err := database.FindPackage(r2pmDir, packageName)
+	if err != nil {
+		log.Fatalf("could not find package %s: %v", packageName, err)
+	}
+
+	if err := pi.Uninstall(r2pmDir); err != nil {
+		log.Fatalf("could not uninstall %s: %v", packageName, err)
+	}
+
+	return nil
+}
 
 func r2pmDir() string {
 	var defaultDir string
@@ -36,6 +76,22 @@ func main() {
 	}
 
 	//
+	// delete
+	//
+
+	deleteCmd := &cobra.Command{
+		Use:  "delete",
+		Args: cobra.ExactArgs(0),
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := R2pmDelete(r2pmDir); err != nil {
+				log.Fatal(err)
+			}
+		},
+	}
+
+	rootCmd.AddCommand(deleteCmd)
+
+	//
 	// init
 	//
 
@@ -43,7 +99,7 @@ func main() {
 		Use:  "init",
 		Args: cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := database.Init(r2pmDir); err != nil {
+			if err := R2pmInit(r2pmDir); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -52,7 +108,7 @@ func main() {
 	rootCmd.AddCommand(initCmd)
 
 	//
-	// init
+	// install
 	//
 
 	installCmd := &cobra.Command{
@@ -60,15 +116,8 @@ func main() {
 		Short: "install a package",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			packageName := args[0]
-
-			pi, err := database.FindPackage(r2pmDir, packageName)
-			if err != nil {
-				log.Fatalf("could not find package %s: %v", packageName, err)
-			}
-
-			if err := pi.Install(r2pmDir); err != nil {
-				log.Fatalf("could not install %s: %v", packageName, err)
+			if err := R2PmInstall(r2pmDir, args[0]); err != nil {
+				log.Fatal(err)
 			}
 		},
 	}
@@ -83,15 +132,8 @@ func main() {
 		Use:  "uninstall",
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			packageName := args[0]
-
-			pi, err := database.FindPackage(r2pmDir, packageName)
-			if err != nil {
-				log.Fatalf("could not find package %s: %v", packageName, err)
-			}
-
-			if err := pi.Uninstall(r2pmDir); err != nil {
-				log.Fatalf("could not uninstall %s: %v", packageName, err)
+			if err := R2PmUninstall(r2pmDir, args[0]); err != nil {
+				log.Fatal(err)
 			}
 		},
 	}

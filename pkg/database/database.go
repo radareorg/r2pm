@@ -14,6 +14,10 @@ import (
 
 const repoName = "r2pm-db"
 
+func Delete(r2pmDir string) error {
+	return os.RemoveAll(r2pmDir)
+}
+
 func Init(r2pmDir string) error {
 	if err := os.MkdirAll(r2pmDir, 0755); err != nil {
 		return xerrors.Errorf("could not create %s: %w", r2pmDir, err)
