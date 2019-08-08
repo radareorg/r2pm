@@ -12,7 +12,10 @@ import (
 	"github.com/radareorg/r2pm/pkg/r2package"
 )
 
-const repoName = "r2pm-db"
+const (
+	dbFile   = "db.json"
+	repoName = "r2pm-db"
+)
 
 func Delete(r2pmDir string) error {
 	return os.RemoveAll(r2pmDir)
@@ -80,7 +83,7 @@ func Init(r2pmDir string) error {
 		return xerrors.Errorf("could not initialize the database: %w", err)
 	}
 
-	dbFile := filepath.Join(r2pmDir, "db.json")
+	dbFile := filepath.Join(r2pmDir, dbFile)
 
 	fd, err := os.Create(dbFile)
 	if err != nil {
@@ -97,4 +100,18 @@ func FindPackage(r2pmDir, packageName string) (*r2package.Info, error) {
 	path := filepath.Join(r2pmDir, repoName, dbSubdir, packageName)
 
 	return r2package.FromFile(path)
+}
+
+func List(r2pmDir string) ([]string, error) {
+	fd, err := os.Open(filepath.Join(r2pmDir, dbFile))
+	if err != nil {
+		return nil, xerrors.Errorf("could not open the database file: %w", err)
+	}
+	defer fd.Close()
+
+	packages := make([]string, 0)
+
+	err = json.NewDecoder(fd).Decode(&packages)
+
+	return packages, err
 }

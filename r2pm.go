@@ -65,25 +65,25 @@ func caseInsensitiveContains(a, b string) bool {
 	return strings.Contains(strings.ToUpper(a), strings.ToUpper(b))
 }
 
-func gitClone(repoPath string, repoUrl string, args ...string) {
-	if _, err := os.Stat(repoPath); os.IsNotExist(err) {
-		fmt.Println("Downloading repository...")
-		cmdArgs := append([]string{"clone", repoUrl}, args...)
-		cmdArgs = append(cmdArgs, repoPath)
-		cmd := exec.Command("git", cmdArgs...)
-		_, err := cmd.CombinedOutput()
-		check(err)
-		fmt.Println("Download complete.")
-	} else if err == nil {
-		fmt.Println("Repository already downloaded, updating...")
-		os.Chdir(repoPath)
-		cmd := exec.Command("git", "pull")
-		_, err := cmd.Output()
-		check(err)
-	} else {
-		check(err)
-	}
-}
+// func gitClone(repoPath string, repoUrl string, args ...string) {
+// 	if _, err := os.Stat(repoPath); os.IsNotExist(err) {
+// 		fmt.Println("Downloading repository...")
+// 		cmdArgs := append([]string{"clone", repoUrl}, args...)
+// 		cmdArgs = append(cmdArgs, repoPath)
+// 		cmd := exec.Command("git", cmdArgs...)
+// 		_, err := cmd.CombinedOutput()
+// 		check(err)
+// 		fmt.Println("Download complete.")
+// 	} else if err == nil {
+// 		fmt.Println("Repository already downloaded, updating...")
+// 		os.Chdir(repoPath)
+// 		cmd := exec.Command("git", "pull")
+// 		_, err := cmd.Output()
+// 		check(err)
+// 	} else {
+// 		check(err)
+// 	}
+// }
 
 /* R2PM utils */
 type PackageInfo struct {
@@ -138,63 +138,63 @@ func getPackageInfo(pkg string) (PackageInfo, error) {
 	return pinfo, err
 }
 
-/* R2PM functions */
-func r2pmInit() {
-	// Make sure git directory exists
-	if _, err := os.Stat(R2PM_GITDIR); os.IsNotExist(err) {
-		os.MkdirAll(R2PM_GITDIR, 0755)
-	}
+// /* R2PM functions */
+// func r2pmInit() {
+// 	// Make sure git directory exists
+// 	if _, err := os.Stat(R2PM_GITDIR); os.IsNotExist(err) {
+// 		os.MkdirAll(R2PM_GITDIR, 0755)
+// 	}
+//
+// 	// Check if radare2-pm was already cloned
+// 	repoPath := path.Join(R2PM_GITDIR, "r2pm-db")
+// 	repoUrl := "https://github.com/radareorg/r2pm-db"
+// 	gitClone(repoPath, repoUrl, "--depth=3", "--recursive")
+//
+// 	// Initialize database
+// 	var validPackages []string
+// 	err := filepath.Walk(R2PM_DB, func(file string, info os.FileInfo, err error) error {
+// 		dir, err := isDirectory(file)
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			return nil
+// 		}
+//
+// 		if dir {
+// 			return nil
+// 		}
+//
+// 		// Read file content and parse it
+// 		pinfo, err := getPackageInfo(file)
+// 		if err != nil {
+// 			return nil
+// 		}
+//
+// 		// Validate package
+// 		if pinfo.Name != filepath.Base(file) {
+// 			fmt.Println("Invalid package name in '" + file + "': '" + pinfo.Name + "'")
+// 			return nil
+// 		}
+// 		validPackages = append(validPackages, pinfo.Name)
+//
+// 		return nil
+// 	})
+//
+// 	// Save valid packages list
+// 	validPackagesJson, _ := json.Marshal(validPackages)
+// 	err = ioutil.WriteFile(DBFILE, validPackagesJson, 0644)
+// 	check(err)
+// }
 
-	// Check if radare2-pm was already cloned
-	repoPath := path.Join(R2PM_GITDIR, "r2pm-db")
-	repoUrl := "https://github.com/radareorg/r2pm-db"
-	gitClone(repoPath, repoUrl, "--depth=3", "--recursive")
-
-	// Initialize database
-	var validPackages []string
-	err := filepath.Walk(R2PM_DB, func(file string, info os.FileInfo, err error) error {
-		dir, err := isDirectory(file)
-		if err != nil {
-			fmt.Println(err)
-			return nil
-		}
-
-		if dir {
-			return nil
-		}
-
-		// Read file content and parse it
-		pinfo, err := getPackageInfo(file)
-		if err != nil {
-			return nil
-		}
-
-		// Validate package
-		if pinfo.Name != filepath.Base(file) {
-			fmt.Println("Invalid package name in '" + file + "': '" + pinfo.Name + "'")
-			return nil
-		}
-		validPackages = append(validPackages, pinfo.Name)
-
-		return nil
-	})
-
-	// Save valid packages list
-	validPackagesJson, _ := json.Marshal(validPackages)
-	err = ioutil.WriteFile(DBFILE, validPackagesJson, 0644)
-	check(err)
-}
-
-func r2pmRemove() {
-	if _, err := os.Stat(R2PM_DIR); os.IsNotExist(err) {
-		return
-	}
-
-	err := os.RemoveAll(R2PM_DIR)
-	check(err)
-
-	fmt.Println("Deleted " + R2PM_DIR)
-}
+// func r2pmRemove() {
+// 	if _, err := os.Stat(R2PM_DIR); os.IsNotExist(err) {
+// 		return
+// 	}
+//
+// 	err := os.RemoveAll(R2PM_DIR)
+// 	check(err)
+//
+// 	fmt.Println("Deleted " + R2PM_DIR)
+// }
 
 func r2pmInfo() {
 	// Read database file

@@ -23,8 +23,8 @@ func R2pmInit(r2pmDir string) error {
 	return database.Init(r2pmDir)
 }
 
-//export R2PmInstall
-func R2PmInstall(r2pmDir, packageName string) error {
+//export R2pmInstall
+func R2pmInstall(r2pmDir, packageName string) error {
 	pi, err := database.FindPackage(r2pmDir, packageName)
 	if err != nil {
 		log.Fatalf("could not find package %s: %v", packageName, err)
@@ -37,8 +37,13 @@ func R2PmInstall(r2pmDir, packageName string) error {
 	return nil
 }
 
-//export R2PmUninstall
-func R2PmUninstall(r2pmDir, packageName string) error {
+//export R2pmList
+func R2pmList(r2pmDir string) ([]string, error) {
+	return database.List(r2pmDir)
+}
+
+//export R2pmUninstall
+func R2pmUninstall(r2pmDir, packageName string) error {
 	pi, err := database.FindPackage(r2pmDir, packageName)
 	if err != nil {
 		log.Fatalf("could not find package %s: %v", packageName, err)
@@ -116,13 +121,37 @@ func main() {
 		Short: "install a package",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := R2PmInstall(r2pmDir, args[0]); err != nil {
+			if err := R2pmInstall(r2pmDir, args[0]); err != nil {
 				log.Fatal(err)
 			}
 		},
 	}
 
 	rootCmd.AddCommand(installCmd)
+
+	//
+	// list
+	//
+
+	listCmd := &cobra.Command{
+		Use:   "list",
+		Short: "list all available packages",
+		Args:  cobra.ExactArgs(0),
+		Run: func(_ *cobra.Command, _ []string) {
+			packages, err := R2pmList(r2pmDir)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			log.Printf("%d packages available:", len(packages))
+
+			for _, p := range packages {
+				log.Print(p)
+			}
+		},
+	}
+
+	rootCmd.AddCommand(listCmd)
 
 	//
 	// uninstall
@@ -132,7 +161,7 @@ func main() {
 		Use:  "uninstall",
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := R2PmUninstall(r2pmDir, args[0]); err != nil {
+			if err := R2pmUninstall(r2pmDir, args[0]); err != nil {
 				log.Fatal(err)
 			}
 		},
