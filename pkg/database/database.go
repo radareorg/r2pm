@@ -4,51 +4,43 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"golang.org/x/xerrors"
 
+	"github.com/radareorg/r2pm/pkg/git"
 	"github.com/radareorg/r2pm/pkg/r2package"
 )
+
+const repoName = "r2pm-db"
 
 func Init(r2pmDir string) error {
 	if err := os.MkdirAll(r2pmDir, 0755); err != nil {
 		return xerrors.Errorf("could not create %s: %w", r2pmDir, err)
 	}
 
-	const (
-		repoName = "r2pm-db"
-		repoUrl  = "https://github.com/radareorg/" + repoName
-	)
+	const repoUrl = "https://github.com/radareorg/" + repoName
 
 	repoDir := filepath.Join(r2pmDir, repoName)
 
-	// is repoDir already a git repository?
-	cmdRepoExists := exec.Command(
-		"git",
-		"rev-parse",
-		"--is-inside-work-tree")
-
-	cmdRepoExists.Dir = repoDir
-
-	if err := cmdRepoExists.Run(); err != nil {
+	if repo, err := git.Open(repoDir); err != nil {
 		log.Printf("Cloning %s in %s", repoUrl, r2pmDir)
 
-		args := []string{"git", "clone", "--depth=3", "--recursive"}
+		args := []string{"--depth=3", "--recursive"}
 
-		if err := runGit(args, r2pmDir); err != nil {
+		if err := git.Clone(repoUrl, r2pmDir, "", args); err != nil {
 			return xerrors.Errorf("could not clone %s: %w", repoName, err)
 		}
 	} else {
 		log.Printf("pulling the latest revision from %s", repoUrl)
 
-		if err := runGit([]string{"reset", "--hard", "HEAD"}, repoDir); err != nil {
+		if err := repo.Run("reset", "--hard", "HEAD"); err != nil {
 			return xerrors.Errorf("could not reset the repo: %w", repoName, err)
 		}
 
-		if err := runGit([]string{"pull"}, repoDir); err != nil {
-			return xerrors.Errorf("could pull the latest revision: %w", repoName, err)
+		// assume origin / master
+		if err := repo.Pull("", ""); err != nil {
+			return xerrors.Errorf("could pull the latest revision: %w", err)
 		}
 	}
 
@@ -95,12 +87,10 @@ func Init(r2pmDir string) error {
 	return json.NewEncoder(fd).Encode(validPackages)
 }
 
-func runGit(args []string, wd string) error {
-	cmd := exec.Command("git", args...)
+func FindPackage(r2pmDir, packageName string) (*r2package.Info, error) {
+	const dbSubdir = "db"
 
-	if wd != "" {
-		cmd.Dir = wd
-	}
+	path := filepath.Join(r2pmDir, repoName, dbSubdir, packageName)
 
-	return cmd.Run()
+	return r2package.FromFile(path)
 }

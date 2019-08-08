@@ -60,11 +60,43 @@ func main() {
 		Short: "install a package",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Fatal("not implemented")
+			packageName := args[0]
+
+			pi, err := database.FindPackage(r2pmDir, packageName)
+			if err != nil {
+				log.Fatalf("could not find package %s: %v", packageName, err)
+			}
+
+			if err := pi.Install(r2pmDir); err != nil {
+				log.Fatalf("could not install %s: %v", packageName, err)
+			}
 		},
 	}
 
 	rootCmd.AddCommand(installCmd)
+
+	//
+	// uninstall
+	//
+
+	uninstallCmd := &cobra.Command{
+		Use:  "uninstall",
+		Args: cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			packageName := args[0]
+
+			pi, err := database.FindPackage(r2pmDir, packageName)
+			if err != nil {
+				log.Fatalf("could not find package %s: %v", packageName, err)
+			}
+
+			if err := pi.Uninstall(r2pmDir); err != nil {
+				log.Fatalf("could not uninstall %s: %v", packageName, err)
+			}
+		},
+	}
+
+	rootCmd.AddCommand(uninstallCmd)
 
 	//
 	// update
