@@ -9,52 +9,9 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/radareorg/r2pm/internal/features"
 	"github.com/radareorg/r2pm/pkg"
-	"github.com/radareorg/r2pm/pkg/database"
 )
-
-//export R2pmDelete
-func R2pmDelete(r2pmDir string) error {
-	return database.Delete(r2pmDir)
-}
-
-//export R2pmInit
-func R2pmInit(r2pmDir string) error {
-	return database.Init(r2pmDir)
-}
-
-//export R2pmInstall
-func R2pmInstall(r2pmDir, packageName string) error {
-	pi, err := database.FindPackage(r2pmDir, packageName)
-	if err != nil {
-		log.Fatalf("could not find package %s: %v", packageName, err)
-	}
-
-	if err := pi.Install(r2pmDir); err != nil {
-		log.Fatalf("could not install %s: %v", packageName, err)
-	}
-
-	return nil
-}
-
-//export R2pmList
-func R2pmList(r2pmDir string) ([]string, error) {
-	return database.List(r2pmDir)
-}
-
-//export R2pmUninstall
-func R2pmUninstall(r2pmDir, packageName string) error {
-	pi, err := database.FindPackage(r2pmDir, packageName)
-	if err != nil {
-		log.Fatalf("could not find package %s: %v", packageName, err)
-	}
-
-	if err := pi.Uninstall(r2pmDir); err != nil {
-		log.Fatalf("could not uninstall %s: %v", packageName, err)
-	}
-
-	return nil
-}
 
 func r2pmDir() string {
 	var defaultDir string
@@ -88,7 +45,7 @@ func main() {
 		Use:  "delete",
 		Args: cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := R2pmDelete(r2pmDir); err != nil {
+			if err := features.Delete(r2pmDir); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -104,7 +61,7 @@ func main() {
 		Use:  "init",
 		Args: cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := R2pmInit(r2pmDir); err != nil {
+			if err := features.Init(r2pmDir); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -121,7 +78,7 @@ func main() {
 		Short: "install a package",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := R2pmInstall(r2pmDir, args[0]); err != nil {
+			if err := features.Install(r2pmDir, args[0]); err != nil {
 				log.Fatal(err)
 			}
 		},
@@ -138,7 +95,7 @@ func main() {
 		Short: "list all available packages",
 		Args:  cobra.ExactArgs(0),
 		Run: func(_ *cobra.Command, _ []string) {
-			packages, err := R2pmList(r2pmDir)
+			packages, err := features.List(r2pmDir)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -161,7 +118,7 @@ func main() {
 		Use:  "uninstall",
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			if err := R2pmUninstall(r2pmDir, args[0]); err != nil {
+			if err := features.Uninstall(r2pmDir, args[0]); err != nil {
 				log.Fatal(err)
 			}
 		},
