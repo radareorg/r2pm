@@ -304,7 +304,7 @@ func r2pmSearch(pkg string) bool {
 	return true
 }
 
-func main() {
+func _main() {
 	// Initialize environment variables
 	var r2pmdir string
 	if isWindows() {
