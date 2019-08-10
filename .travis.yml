@@ -13,7 +13,8 @@ script:
   # build and test in the c-shared mode
   - go build -o c/r2pm.so -buildmode=c-shared ./lib
   - gcc -o r2pm_c c/r2pm.c c/r2pm.so
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then sudo cp c/r2pm.so /lib; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then sudo cp c/r2pm.so /usr/lib; fi
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cp c/r2pm.so .; fi
   - ./r2pm_c
 
   # build as a Go program
