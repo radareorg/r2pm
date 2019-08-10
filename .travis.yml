@@ -12,7 +12,7 @@ script:
   # build and test in the c-shared mode
   - go build -o c/r2pm.so -buildmode=c-shared ./lib
   - gcc -o r2pm_c c/r2pm.c c/r2pm.so
-  - LD_LIBRARY_PATH=c ./r2pm_c
+  - ./r2pm_c
 
   # build as a Go program
   - go build
