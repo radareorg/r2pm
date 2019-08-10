@@ -1,2 +1,6 @@
 # Ignore generated binary
 r2pm
+
+# c-shared files
+c/r2pm.h
+c/r2pm.so
