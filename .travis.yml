@@ -4,6 +4,7 @@ go:
 os:
   - linux
   - osx
+  - windows
 dist: trusty
 script:
   - cd $TRAVIS_BUILD_DIR
