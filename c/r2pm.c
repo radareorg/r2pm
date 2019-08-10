@@ -1,4 +1,4 @@
-#include "r2pm.h"
+#include "libr2pm.h"
 
 int main() {
     R2pmSetDebug(1);

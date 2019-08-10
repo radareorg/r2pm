@@ -11,14 +11,15 @@ script:
   - go vet ./...
 
   # build and test in the c-shared mode
-  - go build -o c/r2pm.so -buildmode=c-shared ./lib
-  - gcc -o r2pm_c c/r2pm.c c/r2pm.so
+  - make r2pm_c
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=.; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then sudo cp c/r2pm.so /usr/lib; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cp c/r2pm.so .; fi
+  # run
   - ./r2pm_c
 
   # build as a Go program
-  - go build
+  - make r2pm
   - ./r2pm init
   - ./r2pm delete
   # - ./r2pm -s r2dec | grep -c Decompiler
