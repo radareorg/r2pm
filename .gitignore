@@ -1,6 +1,7 @@
-# Ignore generated binary
+# Binaries
 r2pm
+r2pm_c
 
 # c-shared files
-c/r2pm.h
-c/r2pm.so
+libr2pm.h
+libr2pm.so
