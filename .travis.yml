@@ -6,11 +6,14 @@ os:
   - osx
   - windows
 dist: trusty
-before_script:
-  - go vet ./...
+
+env:
+  - GO111MODULE=on
+
+install: true
+
 script:
   - cd $TRAVIS_BUILD_DIR
-
   # build and test in the c-shared mode
   - make r2pm_c
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=.; fi
@@ -24,4 +27,3 @@ script:
   - ./r2pm init
   - ./r2pm delete
   # - ./r2pm -s r2dec | grep -c Decompiler
-
