@@ -6,9 +6,10 @@ os:
   - osx
   - windows
 dist: trusty
+before_script:
+  - go vet ./...
 script:
   - cd $TRAVIS_BUILD_DIR
-  - go vet ./...
 
   # build and test in the c-shared mode
   - make r2pm_c
