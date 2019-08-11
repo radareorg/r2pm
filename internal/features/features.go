@@ -1,38 +1,50 @@
 package features
 
 import (
-	"log"
 	"regexp"
 
 	"golang.org/x/xerrors"
 
-	"github.com/radareorg/r2pm/pkg/database"
+	"github.com/radareorg/r2pm/pkg/site"
 )
 
+const msgCannotInitialize = "could not initialize: %w"
+
 func Delete(r2pmDir string) error {
-	return database.Delete(r2pmDir)
+	s, err := site.New(r2pmDir)
+	if err != nil {
+		return xerrors.Errorf(msgCannotInitialize, err)
+	}
+
+	return s.Remove()
 }
 
 func Init(r2pmDir string) error {
-	return database.Init(r2pmDir)
+	s, err := site.New(r2pmDir)
+	if err != nil {
+		return xerrors.Errorf("could not initialize: %w", err)
+	}
+
+	return s.Database().InitOrUpdate()
 }
 
 func Install(r2pmDir, packageName string) error {
-	pi, err := database.FindPackage(r2pmDir, packageName)
+	s, err := site.New(r2pmDir)
 	if err != nil {
-		log.Fatalf("could not find package %s: %v", packageName, err)
+		return xerrors.Errorf(msgCannotInitialize, err)
 	}
 
-	if err := pi.Install(r2pmDir); err != nil {
-		log.Fatalf("could not install %s: %v", packageName, err)
-	}
-
-	return nil
+	return s.InstallPackage(packageName)
 }
 
 // TODO this should return a slice of r2package.Info
 func List(r2pmDir string) ([]string, error) {
-	return database.List(r2pmDir)
+	s, err := site.New(r2pmDir)
+	if err != nil {
+		return nil, xerrors.Errorf(msgCannotInitialize, err)
+	}
+
+	return s.ListInstalledPackages()
 }
 
 // TODO this should return a slice of r2package.Info
@@ -59,14 +71,10 @@ func Search(r2pmDir, pattern string) ([]string, error) {
 }
 
 func Uninstall(r2pmDir, packageName string) error {
-	pi, err := database.FindPackage(r2pmDir, packageName)
+	s, err := site.New(r2pmDir)
 	if err != nil {
-		log.Fatalf("could not find package %s: %v", packageName, err)
+		return xerrors.Errorf(msgCannotInitialize, err)
 	}
 
-	if err := pi.Uninstall(r2pmDir); err != nil {
-		log.Fatalf("could not uninstall %s: %v", packageName, err)
-	}
-
-	return nil
+	return s.UninstallPackage(packageName)
 }

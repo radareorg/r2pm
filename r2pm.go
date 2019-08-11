@@ -1,19 +1,19 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
-	"strings"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"os"
 	"os/exec"
-	"runtime"
 	"path"
-	"io/ioutil"
-	"strconv"
 	"path/filepath"
-	"errors"
-	"encoding/json"
-	"gopkg.in/yaml.v2"
+	"runtime"
+	"strconv"
+	"strings"
 )
 
 const VERSION string = "1.0"
@@ -169,7 +169,7 @@ func r2pmInit() {
 		}
 
 		// Validate package
-		if (pinfo.Name != filepath.Base(file)) {
+		if pinfo.Name != filepath.Base(file) {
 			fmt.Println("Invalid package name in '" + file + "': '" + pinfo.Name + "'")
 			return nil
 		}
@@ -212,7 +212,7 @@ func r2pmInfo() {
 func r2pmInstall(pkg string) bool {
 	// Get package information
 	pinfo, err := getPackageInfo(pkg)
-	if (err != nil) {
+	if err != nil {
 		return false
 	}
 
@@ -280,7 +280,7 @@ func r2pmSearch(pkg string) bool {
 		return false
 	}
 
-	headMsg := "List of available packages: "
+	headMsg := "ListAvailablePackages of available packages: "
 	if pkg != "" {
 		headMsg += "(filter: " + pkg + ")"
 	}
@@ -369,5 +369,5 @@ func _main() {
 	}
 
 	fmt.Println("No action given.")
-	flag.PrintDefaults();
+	flag.PrintDefaults()
 }
