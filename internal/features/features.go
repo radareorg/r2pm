@@ -2,6 +2,9 @@ package features
 
 import (
 	"log"
+	"regexp"
+
+	"golang.org/x/xerrors"
 
 	"github.com/radareorg/r2pm/pkg/database"
 )
@@ -27,8 +30,32 @@ func Install(r2pmDir, packageName string) error {
 	return nil
 }
 
+// TODO this should return a slice of r2package.Info
 func List(r2pmDir string) ([]string, error) {
 	return database.List(r2pmDir)
+}
+
+// TODO this should return a slice of r2package.Info
+func Search(r2pmDir, pattern string) ([]string, error) {
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, xerrors.Errorf("%q is not a valid regex: %w", pattern, err)
+	}
+
+	packages, err := List(r2pmDir)
+	if err != nil {
+		return nil, xerrors.Errorf("could not get the list of packages: %w", err)
+	}
+
+	matches := make([]string, 0, len(packages))
+
+	for _, p := range packages {
+		if re.Match([]byte(p)) {
+			matches = append(matches, p)
+		}
+	}
+
+	return matches, nil
 }
 
 func Uninstall(r2pmDir, packageName string) error {
