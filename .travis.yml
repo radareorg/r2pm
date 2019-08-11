@@ -6,6 +6,7 @@ branches:
 language: go
 
 env:
+  # Travis clones the repo in $GOPATH so we need to explicitely enable Go modules.
   GO111MODULE=on
 
 go:
@@ -25,6 +26,9 @@ script:
   - echo $PWD
   # build and test in the c-shared mode
   - make r2pm_c
+  # debug
+  - ll -a
+  - file libr2pm.so
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=.; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then sudo cp libr2pm.so /usr/lib; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cp libr2pm.so .; fi
