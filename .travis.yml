@@ -12,14 +12,13 @@ env:
 go:
   - 1.12.x
 
-os:
-  - linux
-  - osx
-  - windows
-
-dist: trusty
-
-# install: true
+matrix:
+  include:
+    - os: linux
+    - os: osx
+    - os: windows
+      before_install:
+        - choco install make
 
 script:
   - cd $TRAVIS_BUILD_DIR
