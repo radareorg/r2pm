@@ -5,6 +5,9 @@ branches:
 
 language: go
 
+env:
+  GO111MODULE=on
+
 go:
   - 1.12.x
 
@@ -15,7 +18,7 @@ os:
 
 dist: trusty
 
-install: true
+# install: true
 
 script:
   - cd $TRAVIS_BUILD_DIR
