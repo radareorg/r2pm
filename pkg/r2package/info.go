@@ -1,7 +1,10 @@
 package r2package
 
 import (
+	"io/ioutil"
+	"log"
 	"os"
+	"path/filepath"
 
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v2"
@@ -71,6 +74,36 @@ func FromFile(path string) (InfoFile, error) {
 	err = d.Decode(&infoFile.Info)
 
 	return infoFile, err
+}
+
+func ReadDir(path string) ([]InfoFile, error) {
+	log.Println("Reading " + path)
+
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil, xerrors.Errorf("could not read %s: %w", path, err)
+	}
+
+	packages := make([]InfoFile, 0, len(files))
+
+	for _, f := range files {
+		// skip directories
+		if f.IsDir() {
+			continue
+		}
+
+		name := filepath.Join(path, f.Name())
+
+		ifile, err := FromFile(name)
+		if err != nil {
+			log.Printf("could not read %s: %w", name, err)
+			continue
+		}
+
+		packages = append(packages, ifile)
+	}
+
+	return packages, nil
 }
 
 //

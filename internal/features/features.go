@@ -5,6 +5,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/radareorg/r2pm/pkg/r2package"
 	"github.com/radareorg/r2pm/pkg/site"
 )
 
@@ -37,8 +38,16 @@ func Install(r2pmDir, packageName string) error {
 	return s.InstallPackage(packageName)
 }
 
-// TODO this should return a slice of r2package.Info
-func List(r2pmDir string) ([]string, error) {
+func ListAvailable(r2pmDir string) ([]r2package.Info, error) {
+	s, err := site.New(r2pmDir)
+	if err != nil {
+		return nil, xerrors.Errorf(msgCannotInitialize, err)
+	}
+
+	return s.Database().ListAvailablePackages()
+}
+
+func ListInstalled(r2pmDir string) ([]r2package.Info, error) {
 	s, err := site.New(r2pmDir)
 	if err != nil {
 		return nil, xerrors.Errorf(msgCannotInitialize, err)
@@ -47,22 +56,21 @@ func List(r2pmDir string) ([]string, error) {
 	return s.ListInstalledPackages()
 }
 
-// TODO this should return a slice of r2package.Info
-func Search(r2pmDir, pattern string) ([]string, error) {
+func Search(r2pmDir, pattern string) ([]r2package.Info, error) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {
 		return nil, xerrors.Errorf("%q is not a valid regex: %w", pattern, err)
 	}
 
-	packages, err := List(r2pmDir)
+	packages, err := ListInstalled(r2pmDir)
 	if err != nil {
 		return nil, xerrors.Errorf("could not get the list of packages: %w", err)
 	}
 
-	matches := make([]string, 0, len(packages))
+	matches := make([]r2package.Info, 0, len(packages))
 
 	for _, p := range packages {
-		if re.Match([]byte(p)) {
+		if re.Match([]byte(p.Name)) {
 			matches = append(matches, p)
 		}
 	}

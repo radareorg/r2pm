@@ -90,8 +90,21 @@ func (s Site) UninstallPackage(name string) error {
 	return os.Remove(installedInfoFile)
 }
 
-func (s Site) ListInstalledPackages() ([]string, error) {
-	return nil, xerrors.New("not implemented")
+func (s Site) ListInstalledPackages() ([]r2package.Info, error) {
+	dir := s.installedSubDir()
+
+	ifiles, err := r2package.ReadDir(dir)
+	if err != nil {
+		return nil, xerrors.Errorf("could not read %s: %w", dir, err)
+	}
+
+	packages := make([]r2package.Info, 0, len(ifiles))
+
+	for _, p := range ifiles {
+		packages = append(packages, p.Info)
+	}
+
+	return packages, nil
 }
 
 func (s Site) Remove() error {

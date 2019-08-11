@@ -43,7 +43,7 @@ func R2pmInstall(r2pmDir, packageName *C.char) C.int {
 
 //export R2pmList
 func R2pmList(r2pmDir *C.char) ([]string, C.int) {
-	entries, err := features.List(C.GoString(r2pmDir))
+	entries, err := features.ListInstalled(C.GoString(r2pmDir))
 	return entries, getReturnValue(err)
 }
 

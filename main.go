@@ -10,6 +10,7 @@ import (
 
 	"github.com/radareorg/r2pm/internal/features"
 	"github.com/radareorg/r2pm/pkg"
+	"github.com/radareorg/r2pm/pkg/r2package"
 )
 
 func r2pmDir() string {
@@ -44,6 +45,18 @@ func getArgumentOrExit(c *cli.Context) string {
 func main() {
 	r2pmDir := r2pmDir()
 
+	listAvailablePackages := func(c *cli.Context) error {
+		packages, err := features.ListAvailable(r2pmDir)
+		if err != nil {
+			return err
+		}
+
+		log.Printf("%d available packages", len(packages))
+		printPackageSlice(packages)
+
+		return nil
+	}
+
 	app := cli.NewApp()
 	app.Name = "r2pm"
 	app.Usage = "r2 package manager"
@@ -75,21 +88,31 @@ func main() {
 			},
 		},
 		{
-			Name:  "list",
-			Usage: "list all the available packages",
-			Action: func(c *cli.Context) error {
-				packages, err := features.List(r2pmDir)
-				if err != nil {
-					return err
-				}
+			Name:    "list",
+			Aliases: []string{"ls"},
+			Usage:   "list packages",
+			Action:  listAvailablePackages,
+			Subcommands: []cli.Command{
+				{
+					Name:   "available",
+					Usage:  "list all the available packages",
+					Action: listAvailablePackages,
+				},
+				{
+					Name:  "installed",
+					Usage: "list all the installed packages",
+					Action: func(c *cli.Context) error {
+						packages, err := features.ListInstalled(r2pmDir)
+						if err != nil {
+							return err
+						}
 
-				log.Printf("%d packages available", len(packages))
+						log.Printf("%d installed packages", len(packages))
+						printPackageSlice(packages)
 
-				for _, p := range packages {
-					log.Print(p)
-				}
-
-				return nil
+						return nil
+					},
+				},
 			},
 		},
 		{
@@ -105,10 +128,7 @@ func main() {
 				}
 
 				log.Printf("Your search returned %d matches", len(matches))
-
-				for _, m := range matches {
-					log.Println(m)
-				}
+				printPackageSlice(matches)
 
 				return nil
 			},
@@ -127,5 +147,11 @@ func main() {
 
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func printPackageSlice(packages []r2package.Info) {
+	for _, p := range packages {
+		log.Printf("%s: %s", p.Name, p.Desc)
 	}
 }
