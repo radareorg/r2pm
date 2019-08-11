@@ -71,8 +71,9 @@ func main() {
 			},
 		},
 		{
-			Name:  "init",
-			Usage: "initialize the local package database",
+			Name:    "init",
+			Aliases: []string{"update"},
+			Usage:   "initialize or update the local package database",
 			Action: func(*cli.Context) error {
 				return features.Init(r2pmDir)
 			},
