@@ -16,9 +16,9 @@ matrix:
   include:
     - os: linux
     - os: osx
-    - os: windows
-      before_install:
-        - choco install make
+    # - os: windows
+    #   before_install:
+    #     - choco install make
 
 script:
   - cd $TRAVIS_BUILD_DIR
