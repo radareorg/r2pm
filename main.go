@@ -7,7 +7,6 @@ import (
 	"runtime"
 
 	"github.com/urfave/cli"
-	"golang.org/x/xerrors"
 
 	"github.com/radareorg/r2pm/internal/features"
 	"github.com/radareorg/r2pm/pkg"
@@ -28,6 +27,20 @@ func r2pmDir() string {
 	return pkg.GetenvDefault("R2PM_DIR", defaultDir)
 }
 
+func getArgumentOrExit(c *cli.Context) string {
+	packageName := c.Args().First()
+
+	if packageName == "" {
+		if err := cli.ShowSubcommandHelp(c); err != nil {
+			log.Fatal(err)
+		}
+
+		os.Exit(1)
+	}
+
+	return packageName
+}
+
 func main() {
 	r2pmDir := r2pmDir()
 
@@ -35,6 +48,12 @@ func main() {
 	app.Name = "r2pm"
 	app.Usage = "r2 package manager"
 	app.Version = "0.0.1"
+
+	app.Flags = []cli.Flag{
+		cli.BoolTFlag{
+			Name: "test",
+		},
+	}
 
 	app.Commands = []cli.Command{
 		{
@@ -52,14 +71,11 @@ func main() {
 			},
 		},
 		{
-			Name:  "install",
-			Usage: "install a package",
+			Name:      "install",
+			Usage:     "install a package",
+			ArgsUsage: "PACKAGE",
 			Action: func(c *cli.Context) error {
-				packageName := c.Args().First()
-
-				if packageName == "" {
-					return xerrors.New("a package name is required")
-				}
+				packageName := getArgumentOrExit(c)
 
 				return features.Install(r2pmDir, packageName)
 			},
@@ -83,14 +99,32 @@ func main() {
 			},
 		},
 		{
-			Name:  "uninstall",
-			Usage: "uninstall a package",
+			Name:      "search",
+			Usage:     "search for a package in the database",
+			ArgsUsage: "PATTERN",
 			Action: func(c *cli.Context) error {
-				packageName := c.Args().First()
+				pattern := getArgumentOrExit(c)
 
-				if packageName == "" {
-					return xerrors.New("a package name is required")
+				matches, err := features.Search(r2pmDir, pattern)
+				if err != nil {
+					return err
 				}
+
+				log.Printf("Your search returned %d matches", len(matches))
+
+				for _, m := range matches {
+					log.Println(m)
+				}
+
+				return nil
+			},
+		},
+		{
+			Name:      "uninstall",
+			Usage:     "uninstall a package",
+			ArgsUsage: "PACKAGE",
+			Action: func(c *cli.Context) error {
+				packageName := getArgumentOrExit(c)
 
 				return features.Uninstall(r2pmDir, packageName)
 			},
