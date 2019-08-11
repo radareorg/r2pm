@@ -22,15 +22,11 @@ matrix:
 
 script:
   - cd $TRAVIS_BUILD_DIR
-  - echo $PWD
+
   # build and test in the c-shared mode
   - make r2pm_c
-  # debug
-  - ls -la
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then readelf -a libr2pm.so; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=.; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then mkdir -p ${HOME}/lib; cp libr2pm.so ${HOME}/lib; fi
-  # run
   - ./r2pm_c
 
   # build as a Go program
