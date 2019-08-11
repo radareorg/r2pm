@@ -27,10 +27,10 @@ script:
   # build and test in the c-shared mode
   - make r2pm_c
   # debug
-  - ll -a
-  - file libr2pm.so
+  - ls -la
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then readelf -a libr2pm.so;
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=.; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then sudo cp libr2pm.so /usr/lib; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then mkdir -p ${HOME}/lib; cp libr2pm.so ${HOME}/lib; fi
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cp libr2pm.so .; fi
   # run
   - ./r2pm_c
