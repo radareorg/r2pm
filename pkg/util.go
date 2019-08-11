@@ -12,7 +12,7 @@ func CopyFile(src, dst string) error {
 	}
 	defer srcFd.Close()
 
-	dstFd, err := os.Open(dst)
+	dstFd, err := os.Create(dst)
 	if err != nil {
 		return err
 	}

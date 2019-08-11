@@ -3,7 +3,6 @@ package r2package
 import (
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -11,27 +10,17 @@ import (
 	"github.com/radareorg/r2pm/pkg/git"
 )
 
-//
-//
-//
-
 type gitInstaller struct {
 	info Info
 }
 
 func (g gitInstaller) install(inDir string) error {
-	path := filepath.Join(inDir, g.info.Name)
-
-	if err := os.Mkdir(path, 0755); err != nil {
-		return xerrors.Errorf("could not create %s: %w", inDir, err)
-	}
-
 	const (
 		remoteName   = "origin"
 		remoteBranch = "master"
 	)
 
-	repo, err := git.Init(path, false)
+	repo, err := git.Init(inDir, false)
 	if err != nil {
 		return xerrors.Errorf("could not init the repository: %w", err)
 	}
@@ -48,7 +37,7 @@ func (g gitInstaller) install(inDir string) error {
 		fields := strings.Fields(line)
 
 		cmd := exec.Command(fields[0], fields[1:]...)
-		cmd.Dir = path
+		cmd.Dir = inDir
 
 		if err := cmd.Run(); err != nil {
 			return xerrors.Errorf(

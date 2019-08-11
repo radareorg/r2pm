@@ -50,7 +50,16 @@ func (s Site) InstallPackage(name string) error {
 		return xerrors.Errorf("could not determine where to install %s: %w", name, err)
 	}
 
+	dir = filepath.Join(dir, ifile.Name)
+
+	if err := os.Mkdir(dir, 0755); err != nil {
+		return xerrors.Errorf("could not create %s: %w", dir, err)
+	}
+
 	if err := ifile.Install(dir); err != nil {
+		// delete the directory that we just created
+		os.RemoveAll(dir)
+
 		return xerrors.Errorf("could not install %s in %s: %w", name, dir, err)
 	}
 
@@ -111,5 +120,5 @@ func (s Site) gitSubDir() string {
 }
 
 func (s Site) installedSubDir() string {
-	return filepath.Join(s.path, "installer")
+	return filepath.Join(s.path, "installed")
 }
