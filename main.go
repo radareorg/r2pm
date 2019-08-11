@@ -2,10 +2,12 @@ package main
 
 import (
 	"log"
+	"os"
 	"path"
 	"runtime"
 
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli"
+	"golang.org/x/xerrors"
 
 	"github.com/radareorg/r2pm/internal/features"
 	"github.com/radareorg/r2pm/pkg"
@@ -29,112 +31,73 @@ func r2pmDir() string {
 func main() {
 	r2pmDir := r2pmDir()
 
-	rootCmd := &cobra.Command{
-		Use:     "r2pm",
-		Short:   "r2 package manager",
-		Version: "1.0.0",
-	}
+	app := cli.NewApp()
+	app.Name = "r2pm"
+	app.Usage = "r2 package manager"
+	app.Version = "0.0.1"
 
-	//
-	// delete
-	//
+	app.Commands = []cli.Command{
+		{
+			Name:  "delete",
+			Usage: "delete the local package database",
+			Action: func(*cli.Context) error {
+				return features.Delete(r2pmDir)
+			},
+		},
+		{
+			Name:  "init",
+			Usage: "initialize the local package database",
+			Action: func(*cli.Context) error {
+				return features.Init(r2pmDir)
+			},
+		},
+		{
+			Name:  "install",
+			Usage: "install a package",
+			Action: func(c *cli.Context) error {
+				packageName := c.Args().First()
 
-	deleteCmd := &cobra.Command{
-		Use:  "delete",
-		Args: cobra.ExactArgs(0),
-		Run: func(cmd *cobra.Command, args []string) {
-			if err := features.Delete(r2pmDir); err != nil {
-				log.Fatal(err)
-			}
+				if packageName == "" {
+					return xerrors.New("a package name is required")
+				}
+
+				return features.Install(r2pmDir, packageName)
+			},
+		},
+		{
+			Name:  "list",
+			Usage: "list all the available packages",
+			Action: func(c *cli.Context) error {
+				packages, err := features.List(r2pmDir)
+				if err != nil {
+					return err
+				}
+
+				log.Printf("%d packages available", len(packages))
+
+				for _, p := range packages {
+					log.Print(p)
+				}
+
+				return nil
+			},
+		},
+		{
+			Name:  "uninstall",
+			Usage: "uninstall a package",
+			Action: func(c *cli.Context) error {
+				packageName := c.Args().First()
+
+				if packageName == "" {
+					return xerrors.New("a package name is required")
+				}
+
+				return features.Uninstall(r2pmDir, packageName)
+			},
 		},
 	}
 
-	rootCmd.AddCommand(deleteCmd)
-
-	//
-	// init
-	//
-
-	initCmd := &cobra.Command{
-		Use:  "init",
-		Args: cobra.ExactArgs(0),
-		Run: func(cmd *cobra.Command, args []string) {
-			if err := features.Init(r2pmDir); err != nil {
-				log.Fatal(err)
-			}
-		},
-	}
-
-	rootCmd.AddCommand(initCmd)
-
-	//
-	// install
-	//
-
-	installCmd := &cobra.Command{
-		Use:   "install",
-		Short: "install a package",
-		Args:  cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			if err := features.Install(r2pmDir, args[0]); err != nil {
-				log.Fatal(err)
-			}
-		},
-	}
-
-	rootCmd.AddCommand(installCmd)
-
-	//
-	// list
-	//
-
-	listCmd := &cobra.Command{
-		Use:   "list",
-		Short: "list all available packages",
-		Args:  cobra.ExactArgs(0),
-		Run: func(_ *cobra.Command, _ []string) {
-			packages, err := features.List(r2pmDir)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			log.Printf("%d packages available:", len(packages))
-
-			for _, p := range packages {
-				log.Print(p)
-			}
-		},
-	}
-
-	rootCmd.AddCommand(listCmd)
-
-	//
-	// uninstall
-	//
-
-	uninstallCmd := &cobra.Command{
-		Use:  "uninstall",
-		Args: cobra.ExactArgs(1),
-		Run: func(cmd *cobra.Command, args []string) {
-			if err := features.Uninstall(r2pmDir, args[0]); err != nil {
-				log.Fatal(err)
-			}
-		},
-	}
-
-	rootCmd.AddCommand(uninstallCmd)
-
-	//
-	// update
-	//
-
-	updateCmd := &cobra.Command{
-		Use: "update",
-	}
-
-	rootCmd.AddCommand(updateCmd)
-
-	if err := rootCmd.Execute(); err != nil {
+	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
 	}
 }
