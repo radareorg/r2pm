@@ -1,19 +1,36 @@
+---
+branches:
+  only:
+    - master
+
 language: go
+
+env:
+  # Travis clones the repo in $GOPATH so we need to explicitely enable Go modules.
+  GO111MODULE=on
+
 go:
   - 1.12.x
-os:
-  - linux
-  - osx
-dist: trusty
+
+matrix:
+  include:
+    - os: linux
+    - os: osx
+    # - os: windows
+    #   before_install:
+    #     - choco install make
+
 script:
   - cd $TRAVIS_BUILD_DIR
-  - go vet ./...
 
-    # try building in the c-shared mode
-  - go build -o r2pm.so -buildmode=c-shared ./lib
+  # build and test in the c-shared mode
+  - make r2pm_c
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=.; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then mkdir -p ${HOME}/lib; cp libr2pm.so ${HOME}/lib; fi
+  - ./r2pm_c
 
-    # build as a Go program
-  - go build
+  # build as a Go program
+  - make r2pm
   - ./r2pm init
+  - ./r2pm delete
   # - ./r2pm -s r2dec | grep -c Decompiler
-
