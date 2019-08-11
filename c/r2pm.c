@@ -3,7 +3,7 @@
 int main() {
     R2pmSetDebug(1);
 
-    char* path = "/home/quentin/.local/share/radare2/r2pm/";
+    char* path = "r2pm_c-test-repo";
 
     R2pmInit(path);
     R2pmDelete(path);
