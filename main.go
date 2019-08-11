@@ -49,12 +49,6 @@ func main() {
 	app.Usage = "r2 package manager"
 	app.Version = "0.0.1"
 
-	app.Flags = []cli.Flag{
-		cli.BoolTFlag{
-			Name: "test",
-		},
-	}
-
 	app.Commands = []cli.Command{
 		{
 			Name:  "delete",
