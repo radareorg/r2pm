@@ -1,14 +1,19 @@
+---
+branches:
+  only:
+    - master
+
 language: go
+
 go:
   - 1.12.x
+
 os:
   - linux
   - osx
   - windows
-dist: trusty
 
-env:
-  - GO111MODULE=on
+dist: trusty
 
 install: true
 
