@@ -7,7 +7,7 @@ libr2pm.so: lib/main.go
 	go build -o $@ -buildmode=c-shared ./lib
 
 r2pm_c: c/r2pm.c libr2pm.so
-	gcc -o $@ -I${PWD} -L${PWD} -lr2pm $<
+	gcc -v -Wl,-v -o $@ -I. -L. -lr2pm $<
 
 clean:
 	rm libr2pm.so libr2pm.h r2pm r2pm_c
