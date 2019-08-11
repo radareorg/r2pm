@@ -3,20 +3,21 @@ package main
 import "C"
 
 import (
+	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/radareorg/r2pm/internal/features"
 )
 
-var debug = false
+func init() {
+	// Disable the logger by default
+	R2pmSetDebug(0)
+}
 
 func getReturnValue(err error) C.int {
 	if err != nil {
-		if debug {
-			log.Print(err.Error())
-		}
-
-		return -1
+		log.Fatal(err.Error())
 	}
 
 	return 0
@@ -54,11 +55,15 @@ func R2pmUninstall(r2pmDir, packageName *C.char) C.int {
 
 //export R2pmSetDebug
 func R2pmSetDebug(value C.int) {
-	debug = value != 0
-
-	if debug {
-		log.Print("debug enabled")
+	if value == 0 {
+		log.SetOutput(ioutil.Discard)
+		return
 	}
+
+	log.SetOutput(os.Stderr)
+	log.SetPrefix("libr2pm: ")
+
+	log.Print("debug enabled")
 }
 
 func main() {}
