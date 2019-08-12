@@ -3,12 +3,10 @@
 
 #include "libr2pm.h"
 
-#define ERROR -1
-
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         fprintf(stderr, "USAGE: %s <command>\n", argv[0]);
-        return ERROR;
+        return EXIT_FAILURE;
     }
 
     r2pm_set_debug(1);
@@ -48,6 +46,6 @@ int main(int argc, char* argv[]) {
         }
     } else {
         fprintf(stderr, "%s: unknown command\n", command);
-        return ERROR;
+        return EXIT_FAILURE;
     }
 }
