@@ -31,6 +31,8 @@ func (d Database) InitOrUpdate() error {
 		url          = "https://github.com/radareorg/" + repoName
 	)
 
+	log.Print("Opening " + d.path)
+
 	repo, err := git.Open(d.path)
 	if err != nil {
 		// Create the repo if it does not exist
