@@ -1,9 +1,9 @@
 all: r2pm r2pm_c libr2pm.so
 
-r2pm:
+r2pm: $(wildcard internal/**/*.go pkg/**/*.go main.go)
 	go build
 
-libr2pm.so: lib/main.go
+libr2pm.so: $(wildcard internal/**/*.go lib/*.go pkg/**/*.go)
 	go build -o $@ -buildmode=c-shared ./lib
 
 r2pm_c: c/r2pm.c libr2pm.so
