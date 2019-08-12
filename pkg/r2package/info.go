@@ -1,18 +1,18 @@
 package r2package
 
 import (
+	"io/ioutil"
+	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v2"
-
-	"github.com/radareorg/r2pm/pkg/git"
 )
 
-const gitSubdir = "git"
+//
+// Info
+//
 
 type Info struct {
 	Name          string
@@ -23,85 +23,94 @@ type Info struct {
 	UninstallCmds []string `yaml:"uninstall"`
 }
 
-func FromFile(path string) (*Info, error) {
+func (i Info) Install(inDir string) error {
+	installer, err := i.installer()
+	if err != nil {
+		return err
+	}
+
+	return installer.install(inDir)
+}
+
+func (i Info) Uninstall(inDir string) error {
+	installer, err := i.installer()
+	if err != nil {
+		return err
+	}
+
+	return installer.uninstall(inDir)
+}
+
+func (i Info) installer() (installer, error) {
+	switch i.Type {
+	case "git":
+		return gitInstaller{i}, nil
+	default:
+		return nil, xerrors.Errorf("%q: unhandled package type", i.Type)
+	}
+}
+
+//
+// InfoFile
+//
+
+type InfoFile struct {
+	Info
+	Path string
+}
+
+func FromFile(path string) (InfoFile, error) {
+	infoFile := InfoFile{Path: path}
+
 	fd, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return infoFile, err
 	}
 	defer fd.Close()
 
 	d := yaml.NewDecoder(fd)
 	d.SetStrict(true)
 
-	info := &Info{}
+	err = d.Decode(&infoFile.Info)
 
-	err = d.Decode(&info)
-
-	return info, err
+	return infoFile, err
 }
 
-func (i Info) Install(r2pmDir string) error {
-	if i.Type != "git" {
-		return xerrors.Errorf("package type %s not implemented", i.Type)
+func ReadDir(path string) ([]InfoFile, error) {
+	log.Println("Reading " + path)
+
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil, xerrors.Errorf("could not read %s: %w", path, err)
 	}
 
-	gitDir := filepath.Join(r2pmDir, gitSubdir)
-	repoPath := i.InstallDir(r2pmDir)
+	packages := make([]InfoFile, 0, len(files))
 
-	if _, err := git.Open(repoPath); err == nil {
-		return xerrors.Errorf(
-			"%s is already installed - %s exists",
-			i.Name,
-			repoPath)
-	}
-
-	if err := os.MkdirAll(gitDir, 0755); err != nil {
-		return xerrors.Errorf("could not create %s: %w", gitDir, err)
-	}
-
-	if err := git.Clone(i.Repo, gitDir, "", nil); err != nil {
-		return xerrors.Errorf("could not clone %s: %w", i.Repo, err)
-	}
-
-	for idx, line := range i.InstallCmds {
-		fields := strings.Fields(line)
-
-		cmd := exec.Command(fields[0], fields[1:]...)
-		cmd.Dir = repoPath
-
-		if err := cmd.Run(); err != nil {
-			return xerrors.Errorf(
-				"install command #%d [%q] failed: %w",
-				idx+1,
-				line,
-				err)
-		}
-	}
-
-	return nil
-}
-
-func (i Info) InstallDir(r2pmDir string) string {
-	gitDir := filepath.Join(r2pmDir, gitSubdir)
-	return filepath.Join(gitDir, filepath.Base(i.Repo))
-}
-
-func (i Info) Uninstall(r2pmDir string) error {
-	for idx, line := range i.UninstallCmds {
-		fields := strings.Fields(line)
-
-		cmd := exec.Command(fields[0], fields[1:]...)
-		cmd.Dir = i.InstallDir(r2pmDir)
-
-		if err := cmd.Run(); err != nil {
-			return xerrors.Errorf(
-				"uninstall command #%d [%q] failed: %w",
-				idx+1,
-				line,
-				err)
+	for _, f := range files {
+		// skip directories
+		if f.IsDir() {
+			continue
 		}
 
+		name := filepath.Join(path, f.Name())
+
+		ifile, err := FromFile(name)
+		if err != nil {
+			log.Printf("could not read %s: %w", name, err)
+			continue
+		}
+
+		packages = append(packages, ifile)
 	}
 
-	return os.RemoveAll(i.InstallDir(r2pmDir))
+	return packages, nil
+}
+
+//
+// installer
+//
+
+type installer interface {
+	install(string) error
+	uninstall(string) error
 }
