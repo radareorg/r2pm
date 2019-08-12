@@ -14,10 +14,10 @@ int main() {
         return ret;
     }
 
-    if ((ret = r2pm_install(path, "r2dec")) != 0) {
-        perror("install");
-        return ret;
-    }
+//    if ((ret = r2pm_install(path, "r2dec")) != 0) {
+//        perror("install");
+//        return ret;
+//    }
 
     struct r2pm_string_list* p;
 
