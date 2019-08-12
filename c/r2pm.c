@@ -18,17 +18,17 @@ int main() {
 //        perror("install");
 //        return ret;
 //    }
-
-    struct r2pm_string_list* p;
-
-    if ((ret = r2pm_list_available(path, &p)) != 0) {
-        perror("list_available");
-        return ret;
-    }
-
-    if (p == NULL) {
-        fprintf(stderr, "p is null");
-    }
+//
+//    struct r2pm_string_list* p;
+//
+//    if ((ret = r2pm_list_available(path, &p)) != 0) {
+//        perror("list_available");
+//        return ret;
+//    }
+//
+//    if (p == NULL) {
+//        fprintf(stderr, "p is null");
+//    }
 
     if ((ret = r2pm_delete(path)) != 0) {
         perror("delete");
