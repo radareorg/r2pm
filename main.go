@@ -97,8 +97,19 @@ func main() {
 		{
 			Name:      "install",
 			Usage:     "install a package",
-			ArgsUsage: "PACKAGE",
+			ArgsUsage: "[PACKAGE]",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "f",
+					Usage: "install a package described by a local file",
+				},
+			},
 			Action: func(c *cli.Context) error {
+				if path := c.String("f"); path != "" {
+					log.Print("Installing " + path)
+					return features.InstallFromFile(r2pmDir, path)
+				}
+
 				packageName := getArgumentOrExit(c)
 
 				return features.Install(r2pmDir, packageName)

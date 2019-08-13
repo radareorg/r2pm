@@ -45,27 +45,16 @@ func (s Site) InstallPackage(name string) error {
 		return xerrors.Errorf("could not find the info file: %w", err)
 	}
 
-	dir, err := s.getPackageSubDir(ifile.Type)
+	return s.installFromInfoFile(ifile)
+}
+
+func (s Site) InstallPackageFromFile(path string) error {
+	ifile, err := r2package.FromFile(path)
 	if err != nil {
-		return xerrors.Errorf("could not determine where to install %s: %w", name, err)
+		return xerrors.Errorf("could not read %s as a package info file: %w", path, err)
 	}
 
-	dir = filepath.Join(dir, ifile.Name)
-
-	if err := os.Mkdir(dir, 0755); err != nil {
-		return xerrors.Errorf("could not create %s: %w", dir, err)
-	}
-
-	if err := ifile.Install(dir); err != nil {
-		// delete the directory that we just created
-		os.RemoveAll(dir)
-
-		return xerrors.Errorf("could not install %s in %s: %w", name, dir, err)
-	}
-
-	installedFilename := filepath.Join(s.installedSubDir(), ifile.Name)
-
-	return pkg.CopyFile(ifile.Path, installedFilename)
+	return s.installFromInfoFile(ifile)
 }
 
 func (s Site) UninstallPackage(name string) error {
@@ -130,6 +119,30 @@ func (s Site) getPackageSubDir(pkgType string) (string, error) {
 
 func (s Site) gitSubDir() string {
 	return filepath.Join(s.path, "git")
+}
+
+func (s Site) installFromInfoFile(ifile r2package.InfoFile) error {
+	dir, err := s.getPackageSubDir(ifile.Type)
+	if err != nil {
+		return xerrors.Errorf("could not determine where to install %s: %w", ifile.Name, err)
+	}
+
+	dir = filepath.Join(dir, ifile.Name)
+
+	if err := os.Mkdir(dir, 0755); err != nil {
+		return xerrors.Errorf("could not create %s: %w", dir, err)
+	}
+
+	if err := ifile.Install(dir); err != nil {
+		// delete the directory that we just created
+		os.RemoveAll(dir)
+
+		return xerrors.Errorf("could not install %s in %s: %w", ifile.Name, dir, err)
+	}
+
+	installedFilename := filepath.Join(s.installedSubDir(), ifile.Name)
+
+	return pkg.CopyFile(ifile.Path, installedFilename)
 }
 
 func (s Site) installedSubDir() string {
