@@ -9,8 +9,6 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    r2pm_set_debug(1);
-
     int ret;
 
     char* path = "r2pm_c-test-repo";

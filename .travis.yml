@@ -27,9 +27,9 @@ script:
   - make r2pm_c
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=.; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then mkdir -p ${HOME}/lib; cp libr2pm.so ${HOME}/lib; fi
-  - ./r2pm_c init
-  - ./r2pm_c list-available | grep -q r2dec
-  - ./r2pm_c delete
+  - R2PM_DEBUG=1 ./r2pm_c init
+  - R2PM_DEBUG=1 ./r2pm_c list-available | grep -q r2dec
+  - R2PM_DEBUG=1 ./r2pm_c delete
 
   # build as a Go program
   - make r2pm

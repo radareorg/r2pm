@@ -24,8 +24,12 @@ const (
 )
 
 func init() {
-	// Disable the logger by default
-	r2pm_set_debug(0)
+	if os.Getenv("R2PM_DEBUG") != "" {
+		r2pm_set_debug(1)
+	} else {
+		// Disable the logger by default
+		r2pm_set_debug(0)
+	}
 }
 
 func getReturnValue(err error) C.int {
