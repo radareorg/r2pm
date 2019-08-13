@@ -27,11 +27,16 @@ script:
   - make r2pm_c
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export LD_LIBRARY_PATH=.; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then mkdir -p ${HOME}/lib; cp libr2pm.so ${HOME}/lib; fi
-  - ./r2pm_c
+  - R2PM_DEBUG=1 ./r2pm_c init
+  - R2PM_DEBUG=1 ./r2pm_c list-available | grep -q r2dec
+  - R2PM_DEBUG=1 ./r2pm_c delete
 
   # build as a Go program
   - make test
   - make r2pm
   - ./r2pm init
+  # r2dec must be present in the database
+  - ./r2pm search dec | grep -q Decompiler
+  - ./r2pm install -f test/test.yaml
+  - ./r2pm list installed | grep -q test
   - ./r2pm delete
-  # - ./r2pm -s r2dec | grep -c Decompiler
