@@ -1,6 +1,7 @@
 package r2package
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -96,7 +97,7 @@ func ReadDir(path string) ([]InfoFile, error) {
 
 		ifile, err := FromFile(name)
 		if err != nil {
-			log.Printf("could not read %s: %w", name, err)
+			fmt.Printf("Warning: could not read %s: %v", name, err)
 			continue
 		}
 
