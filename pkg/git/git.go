@@ -52,18 +52,6 @@ func (r Repository) Run(args ...string) error {
 	return Run(args, string(r))
 }
 
-func Clone(repoUrl, wd, dstDir string, opts []string) error {
-	args := []string{"clone"}
-	args = append(args, opts...)
-	args = append(args, repoUrl)
-
-	if dstDir != "" {
-		args = append(args, dstDir)
-	}
-
-	return Run(args, wd)
-}
-
 func Run(args []string, wd string) error {
 	cmd := exec.Command("git", args...)
 

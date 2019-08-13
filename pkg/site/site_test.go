@@ -12,6 +12,7 @@ func TestNew(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer os.RemoveAll(tempDir)
 
 	siteDir := filepath.Join(tempDir, "r2pm")
 
