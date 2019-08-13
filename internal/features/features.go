@@ -1,6 +1,9 @@
 package features
 
 import (
+	"io/ioutil"
+	"log"
+	"os"
 	"regexp"
 
 	"golang.org/x/xerrors"
@@ -62,7 +65,7 @@ func Search(r2pmDir, pattern string) ([]r2package.Info, error) {
 		return nil, xerrors.Errorf("%q is not a valid regex: %w", pattern, err)
 	}
 
-	packages, err := ListInstalled(r2pmDir)
+	packages, err := ListAvailable(r2pmDir)
 	if err != nil {
 		return nil, xerrors.Errorf("could not get the list of packages: %w", err)
 	}
@@ -76,6 +79,14 @@ func Search(r2pmDir, pattern string) ([]r2package.Info, error) {
 	}
 
 	return matches, nil
+}
+
+func SetDebug(value bool) {
+	if value {
+		log.SetOutput(os.Stderr)
+	} else {
+		log.SetOutput(ioutil.Discard)
+	}
 }
 
 func Uninstall(r2pmDir, packageName string) error {
