@@ -1,9 +1,7 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
-	"os"
 	"unsafe"
 
 	"github.com/radareorg/r2pm/internal/features"
@@ -25,6 +23,8 @@ const (
 func init() {
 	// Disable the logger by default
 	r2pm_set_debug(0)
+
+	log.SetPrefix("libr2pm: ")
 }
 
 func getReturnValue(err error) C.int {
@@ -105,15 +105,7 @@ func r2pm_uninstall(r2pmDir, packageName *C.char) C.int {
 
 //export r2pm_set_debug
 func r2pm_set_debug(value C.int) {
-	if value == 0 {
-		log.SetOutput(ioutil.Discard)
-		return
-	}
-
-	log.SetOutput(os.Stderr)
-	log.SetPrefix("libr2pm: ")
-
-	log.Print("debug enabled")
+	features.SetDebug(value != 0)
 }
 
 func main() {}
