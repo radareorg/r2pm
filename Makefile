@@ -1,5 +1,7 @@
 all: r2pm r2pm_c libr2pm.so
 
+.PHONY: test
+
 test:
 	go test ./...
 
