@@ -1,0 +1,11 @@
+name: test
+type: git
+repo: https://github.com/radareorg/r2pm
+desc: Test package for r2pm
+
+install: 
+  - true
+
+uninstall:
+  - true
+
