@@ -1,17 +1,15 @@
 package site
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/radareorg/r2pm/testdata"
 )
 
 func TestNew(t *testing.T) {
-	tempDir, err := ioutil.TempDir("", "")
-	if err != nil {
-		t.Fatal(err)
-	}
+	tempDir := testdata.TempDirOrFail(t)
 	defer os.RemoveAll(tempDir)
 
 	siteDir := filepath.Join(tempDir, "r2pm")

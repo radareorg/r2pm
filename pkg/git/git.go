@@ -9,8 +9,7 @@ import (
 type Repository string
 
 func Init(path string, force bool) (Repository, error) {
-	_, err := Open(path)
-	if err == nil && !force {
+	if _, err := Open(path); err == nil && !force {
 		return "", xerrors.Errorf("cannot init: %s is already a git repository", path)
 	}
 
