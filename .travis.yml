@@ -30,6 +30,7 @@ script:
   - ./r2pm_c
 
   # build as a Go program
+  - make test
   - make r2pm
   - ./r2pm init
   - ./r2pm delete
