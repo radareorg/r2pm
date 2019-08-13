@@ -38,6 +38,15 @@ func Install(r2pmDir, packageName string) error {
 	return s.InstallPackage(packageName)
 }
 
+func InstallFromFile(r2pmDir, path string) error {
+	s, err := site.New(r2pmDir)
+	if err != nil {
+		return xerrors.Errorf(msgCannotInitialize, err)
+	}
+
+	return s.InstallPackageFromFile(path)
+}
+
 func ListAvailable(r2pmDir string) ([]r2package.Info, error) {
 	s, err := site.New(r2pmDir)
 	if err != nil {
