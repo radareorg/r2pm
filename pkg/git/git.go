@@ -1,10 +1,14 @@
 package git
 
 import (
-	"os/exec"
+	"path/filepath"
 
 	"golang.org/x/xerrors"
+
+	"github.com/radareorg/r2pm/pkg/process"
 )
+
+const gitBin = "git"
 
 type Repository string
 
@@ -22,8 +26,19 @@ func Init(path string, force bool) (Repository, error) {
 }
 
 func Open(path string) (Repository, error) {
-	if Run([]string{"rev-parse", "--is-inside-work-tree"}, path) != nil {
-		return "", xerrors.Errorf("%s is not a git repository")
+	res, err := process.Run(gitBin, []string{"rev-parse", "--show-toplevel"}, path)
+	if err != nil {
+		return "", xerrors.Errorf("%s is not a git repository", path)
+	}
+
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return "", xerrors.Errorf("could not determine the absolute path for %s: %w", path, err)
+	}
+
+	// TODO does this work on Windows? git probably prints CRLF there.
+	if res.Stdout.String() != (absPath + "\n") {
+		return "", xerrors.Errorf("%s is not a git repository", path)
 	}
 
 	return Repository(path), nil
@@ -65,11 +80,6 @@ func Clone(repoUrl, wd, dstDir string, opts []string) error {
 }
 
 func Run(args []string, wd string) error {
-	cmd := exec.Command("git", args...)
-
-	if wd != "" {
-		cmd.Dir = wd
-	}
-
-	return cmd.Run()
+	_, err := process.Run(gitBin, args, wd)
+	return err
 }
