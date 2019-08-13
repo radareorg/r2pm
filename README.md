@@ -7,6 +7,11 @@ It is a rewrite in Go of the [original Shell r2pm script](https://github.com/rad
 
 This tool is still a work in progress.
 
+| CI | Badges/URL |
+|----------|---------------------------------------------------------------------|
+| **GolangCI** 	| https://golangci.com/r/github.com/radareorg/r2pm|
+| **TravisCI** 	| [![Build Status](https://travis-ci.org/radareorg/r2pm.svg?branch=master)](https://travis-ci.org/radareorg/r2pm)|
+
 ## Package example
 
 The official database is available [here](https://github.com/radareorg/r2pm-db).
