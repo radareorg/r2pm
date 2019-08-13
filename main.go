@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path"
@@ -51,16 +52,31 @@ func main() {
 			return err
 		}
 
-		log.Printf("%d available packages", len(packages))
+		fmt.Printf("%d available packages\n", len(packages))
 		printPackageSlice(packages)
 
 		return nil
 	}
 
+	const flagNameDebug = "debug"
+
 	app := cli.NewApp()
 	app.Name = "r2pm"
 	app.Usage = "r2 package manager"
 	app.Version = "0.0.1"
+
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:   flagNameDebug,
+			Usage:  "enable debug logs",
+			EnvVar: "R2PM_DEBUG",
+		},
+	}
+
+	app.Before = func(c *cli.Context) error {
+		features.SetDebug(c.Bool(flagNameDebug))
+		return nil
+	}
 
 	app.Commands = []cli.Command{
 		{
@@ -119,7 +135,7 @@ func main() {
 							return err
 						}
 
-						log.Printf("%d installed packages", len(packages))
+						fmt.Printf("%d installed packages\n", len(packages))
 						printPackageSlice(packages)
 
 						return nil
@@ -139,7 +155,7 @@ func main() {
 					return err
 				}
 
-				log.Printf("Your search returned %d matches", len(matches))
+				fmt.Printf("Your search returned %d matches\n", len(matches))
 				printPackageSlice(matches)
 
 				return nil
@@ -164,6 +180,6 @@ func main() {
 
 func printPackageSlice(packages []r2package.Info) {
 	for _, p := range packages {
-		log.Printf("%s: %s", p.Name, p.Desc)
+		fmt.Printf("%s: %s\n", p.Name, p.Desc)
 	}
 }

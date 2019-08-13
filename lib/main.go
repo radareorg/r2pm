@@ -1,15 +1,14 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
-	"os"
-	"unsafe"
 
 	"github.com/radareorg/r2pm/internal/features"
 )
 
 /*
+#include <stdlib.h>
+
 struct r2pm_string_list{
 	struct r2pm_string_list* next;
 	char* s;
@@ -25,6 +24,8 @@ const (
 func init() {
 	// Disable the logger by default
 	r2pm_set_debug(0)
+
+	log.SetPrefix("libr2pm: ")
 }
 
 func getReturnValue(err error) C.int {
@@ -65,18 +66,18 @@ func r2pm_list_available(r2pmDir *C.char, list **C.struct_r2pm_string_list) C.in
 		return Success
 	}
 
-	newNode := func() unsafe.Pointer {
-		m := C.malloc(C.sizeof_struct_r2pm_string_list)
-		return unsafe.Pointer(m)
+	newNode := func() *C.struct_r2pm_string_list {
+		m := C.calloc(1, C.sizeof_struct_r2pm_string_list)
+		return (*C.struct_r2pm_string_list)(m)
 	}
 
-	start := (*C.struct_r2pm_string_list)(newNode())
+	start := newNode()
 	start.s = C.CString(entries[0].Name)
 
 	previous := start
 
 	for _, e := range entries[1:] {
-		previous.next = (*C.struct_r2pm_string_list)(newNode())
+		previous.next = newNode()
 		previous.next.s = C.CString(e.Name)
 
 		previous = previous.next
@@ -105,15 +106,7 @@ func r2pm_uninstall(r2pmDir, packageName *C.char) C.int {
 
 //export r2pm_set_debug
 func r2pm_set_debug(value C.int) {
-	if value == 0 {
-		log.SetOutput(ioutil.Discard)
-		return
-	}
-
-	log.SetOutput(os.Stderr)
-	log.SetPrefix("libr2pm: ")
-
-	log.Print("debug enabled")
+	features.SetDebug(value != 0)
 }
 
 func main() {}
