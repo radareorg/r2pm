@@ -32,5 +32,8 @@ script:
   # build as a Go program
   - make r2pm
   - ./r2pm init
+  # r2dec must be present in the database
+  - ./r2pm search dec 2>&1 | grep -q Decompiler
+  - ./r2pm install -f test/test.yaml
+  - ./r2pm list installed 2>&1 | grep -q test
   - ./r2pm delete
-  # - ./r2pm -s r2dec | grep -c Decompiler
