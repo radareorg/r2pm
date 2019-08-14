@@ -24,7 +24,7 @@ func TestInit(t *testing.T) {
 		defer os.RemoveAll(tempDir)
 
 		if _, err := Init(tempDir, false); err != nil {
-			testdata.FailExpectedError(t)
+			t.Fatal(err)
 		}
 
 		if _, err := Init(tempDir, false); err == nil {
@@ -37,7 +37,7 @@ func TestInit(t *testing.T) {
 		defer os.RemoveAll(tempDir)
 
 		if _, err := Init(tempDir, false); err != nil {
-			testdata.FailExpectedError(t)
+			t.Fatal(err)
 		}
 
 		if _, err := Init(tempDir, true); err != nil {
