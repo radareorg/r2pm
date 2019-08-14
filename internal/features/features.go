@@ -1,10 +1,14 @@
 package features
 
 import (
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
+	"sort"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -105,4 +109,49 @@ func Uninstall(r2pmDir, packageName string) error {
 	}
 
 	return s.UninstallPackage(packageName)
+}
+
+func Upgrade(r2pmDir, packageName string) error {
+	s, err := site.New(r2pmDir)
+	if err != nil {
+		return xerrors.Errorf(msgCannotInitialize, err)
+	}
+
+	return s.Upgrade(packageName)
+}
+
+func UpgradeAll(r2pmDir string) error {
+	s, err := site.New(r2pmDir)
+	if err != nil {
+		return xerrors.Errorf(msgCannotInitialize, err)
+	}
+
+	packages, err := s.ListInstalledPackages()
+	if err != nil {
+		log.Print(err)
+		return errors.New("could not list the installed packages")
+	}
+
+	failed := make([]string, 0, len(packages))
+
+	for _, p := range packages {
+		name := p.Name
+
+		log.Println("Upgrading " + name)
+
+		if err := s.Upgrade(name); err != nil {
+			log.Print(err)
+			failed = append(failed, name)
+		}
+	}
+
+	sort.Strings(failed)
+
+	if len(failed) > 0 {
+		return fmt.Errorf(
+			"could not upgrade the following packages: %s",
+			strings.Join(failed, ", "))
+	}
+
+	return nil
 }

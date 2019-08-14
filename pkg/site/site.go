@@ -1,6 +1,8 @@
 package site
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -48,6 +50,11 @@ func (s Site) InstallPackage(name string) error {
 	return s.installFromInfoFile(ifile)
 }
 
+func (s Site) InstalledPackage(name string) (r2package.InfoFile, error) {
+	path := filepath.Join(s.installedSubDir(), name)
+	return r2package.FromFile(path)
+}
+
 func (s Site) InstallPackageFromFile(path string) error {
 	ifile, err := r2package.FromFile(path)
 	if err != nil {
@@ -58,11 +65,10 @@ func (s Site) InstallPackageFromFile(path string) error {
 }
 
 func (s Site) UninstallPackage(name string) error {
-	installedInfoFile := filepath.Join(s.installedSubDir(), name)
-
-	ifile, err := r2package.FromFile(installedInfoFile)
+	ifile, err := s.InstalledPackage(name)
 	if err != nil {
-		return xerrors.Errorf("could not find %s as an installed package: %w", name, err)
+		log.Print(err)
+		return fmt.Errorf("could not find %s as an installed package", name)
 	}
 
 	dir, err := s.getPackageSubDir(ifile.Type)
@@ -76,7 +82,7 @@ func (s Site) UninstallPackage(name string) error {
 		return xerrors.Errorf("could not uninstall %s: %w", name, err)
 	}
 
-	return os.Remove(installedInfoFile)
+	return os.Remove(ifile.Path)
 }
 
 func (s Site) ListInstalledPackages() ([]r2package.Info, error) {
@@ -98,6 +104,32 @@ func (s Site) ListInstalledPackages() ([]r2package.Info, error) {
 
 func (s Site) Remove() error {
 	return os.RemoveAll(s.path)
+}
+
+func (s Site) Upgrade(name string) error {
+	// is the package installed?
+	_, err := s.InstalledPackage(name)
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("%q is not installed", name)
+	}
+
+	// is the package available in the database?
+	_, err = s.Database().GetInfoFile(name)
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("%q is not available in the database", name)
+	}
+
+	if err := s.UninstallPackage(name); err != nil {
+		return xerrors.Errorf("could not uninstall %s: %w", name, err)
+	}
+
+	if err := s.InstallPackage(name); err != nil {
+		return xerrors.Errorf("could not install %s: %w", name, err)
+	}
+
+	return nil
 }
 
 //

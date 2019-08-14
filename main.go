@@ -171,10 +171,31 @@ func main() {
 				return features.Uninstall(r2pmDir, packageName)
 			},
 		},
+		{
+			Name:      "upgrade",
+			Usage:     "upgrade (uninstall and reinstall) a package",
+			ArgsUsage: "[PACKAGE]",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "a, all",
+					Usage: "upgrade all packages",
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if c.Bool("a") {
+					return features.UpgradeAll(r2pmDir)
+				}
+
+				packageName := getArgumentOrExit(c)
+
+				return features.Upgrade(r2pmDir, packageName)
+			},
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		log.Fatal(err)
+		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+		os.Exit(1)
 	}
 }
 
