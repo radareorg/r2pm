@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"os"
+	"strconv"
 
 	"github.com/radareorg/r2pm/internal/features"
 )
@@ -22,10 +24,16 @@ const (
 )
 
 func init() {
-	// Disable the logger by default
-	r2pm_set_debug(0)
-
 	log.SetPrefix("libr2pm: ")
+
+	// Enable the logger if the environment variable is a valid boolean
+	env := os.Getenv(features.DebugEnvVar)
+
+	if val, err := strconv.ParseBool(env); err == nil && val {
+		r2pm_set_debug(1)
+	} else {
+		r2pm_set_debug(0)
+	}
 }
 
 func getReturnValue(err error) C.int {

@@ -69,7 +69,7 @@ func main() {
 		cli.BoolFlag{
 			Name:   flagNameDebug,
 			Usage:  "enable debug logs",
-			EnvVar: "R2PM_DEBUG",
+			EnvVar: features.DebugEnvVar,
 		},
 	}
 
