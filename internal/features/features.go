@@ -16,7 +16,11 @@ import (
 	"github.com/radareorg/r2pm/pkg/site"
 )
 
-const msgCannotInitialize = "could not initialize: %w"
+const (
+	DebugEnvVar = "R2PM_DEBUG"
+
+	msgCannotInitialize = "could not initialize: %w"
+)
 
 func Delete(r2pmDir string) error {
 	s, err := site.New(r2pmDir)
