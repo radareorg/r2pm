@@ -25,22 +25,7 @@ func Init(path string, force bool) (Repository, error) {
 }
 
 func Open(path string) (Repository, error) {
-	res, err := process.Run(gitBin, []string{"rev-parse", "--show-toplevel"}, path)
-	if err != nil {
-		return "", xerrors.Errorf("%s is not a git repository", path)
-	}
-
-	absPath, err := filepath.Abs(path)
-	if err != nil {
-		return "", xerrors.Errorf("could not determine the absolute path for %s: %w", path, err)
-	}
-
-	// TODO does this work on Windows? git probably prints CRLF there.
-	if res.Stdout.String() != (absPath + "\n") {
-		return "", xerrors.Errorf("%s is not a git repository", path)
-	}
-
-	return Repository(path), nil
+	return Repository(path), Run([]string{"rev-parse"}, path)
 }
 
 func (r Repository) AddRemote(name, url string) error {
@@ -66,7 +51,13 @@ func (r Repository) Run(args ...string) error {
 	return Run(args, string(r))
 }
 
-func Run(args []string, wd string) error {
-	_, err := process.Run(gitBin, args, wd)
+func Run(args []string, gitDir string) error {
+	gitDir = filepath.Join(gitDir, ".git")
+
+	_, err := process.Run(
+		gitBin,
+		append([]string{"--git-dir", gitDir}, args...),
+		"")
+
 	return err
 }
