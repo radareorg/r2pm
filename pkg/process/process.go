@@ -2,7 +2,9 @@ package process
 
 import (
 	"bytes"
+	"log"
 	"os/exec"
+	"strings"
 )
 
 type Result struct {
@@ -19,7 +21,14 @@ func Run(binary string, args []string, wd string) (Result, error) {
 
 	if wd != "" {
 		cmd.Dir = wd
+	} else {
+		wd = "."
 	}
+
+	log.Printf(
+		"Running %q in %s",
+		strings.Join(append([]string{binary}, args...), " "),
+		wd)
 
 	return res, cmd.Run()
 }
