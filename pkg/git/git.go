@@ -13,8 +13,7 @@ const gitBin = "git"
 type Repository string
 
 func Init(path string, force bool) (Repository, error) {
-	_, err := Open(path)
-	if err == nil && !force {
+	if _, err := Open(path); err == nil && !force {
 		return "", xerrors.Errorf("cannot init: %s is already a git repository", path)
 	}
 
@@ -26,22 +25,18 @@ func Init(path string, force bool) (Repository, error) {
 }
 
 func Open(path string) (Repository, error) {
-	res, err := process.Run(gitBin, []string{"rev-parse", "--show-toplevel"}, path)
-	if err != nil {
-		return "", xerrors.Errorf("%s is not a git repository", path)
-	}
-
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		return "", xerrors.Errorf("could not determine the absolute path for %s: %w", path, err)
+		return "", xerrors.Errorf(
+			"could not get the absolute path for %s: %w",
+			path,
+			err)
 	}
 
-	// TODO does this work on Windows? git probably prints CRLF there.
-	if res.Stdout.String() != (absPath + "\n") {
-		return "", xerrors.Errorf("%s is not a git repository", path)
-	}
+	args := []string{"--git-dir", filepath.Join(absPath, ".git"), "rev-parse"}
 
-	return Repository(path), nil
+	// Check that there absPath contains a .git Repository
+	return Repository(path), Run(args, "")
 }
 
 func (r Repository) AddRemote(name, url string) error {
@@ -65,18 +60,6 @@ func (r Repository) Pull(remote, branch string) error {
 
 func (r Repository) Run(args ...string) error {
 	return Run(args, string(r))
-}
-
-func Clone(repoUrl, wd, dstDir string, opts []string) error {
-	args := []string{"clone"}
-	args = append(args, opts...)
-	args = append(args, repoUrl)
-
-	if dstDir != "" {
-		args = append(args, dstDir)
-	}
-
-	return Run(args, wd)
 }
 
 func Run(args []string, wd string) error {
