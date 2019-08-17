@@ -25,7 +25,18 @@ func Init(path string, force bool) (Repository, error) {
 }
 
 func Open(path string) (Repository, error) {
-	return Repository(path), Run([]string{"rev-parse"}, path)
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return "", xerrors.Errorf(
+			"could not get the absolute path for %s: %w",
+			path,
+			err)
+	}
+
+	args := []string{"--git-dir", filepath.Join(absPath, ".git"), "rev-parse"}
+
+	// Check that there absPath contains a .git Repository
+	return Repository(path), Run(args, "")
 }
 
 func (r Repository) AddRemote(name, url string) error {
@@ -51,13 +62,7 @@ func (r Repository) Run(args ...string) error {
 	return Run(args, string(r))
 }
 
-func Run(args []string, gitDir string) error {
-	gitDir = filepath.Join(gitDir, ".git")
-
-	_, err := process.Run(
-		gitBin,
-		append([]string{"--git-dir", gitDir}, args...),
-		"")
-
+func Run(args []string, wd string) error {
+	_, err := process.Run(gitBin, args, wd)
 	return err
 }
