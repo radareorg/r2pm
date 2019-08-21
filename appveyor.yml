@@ -3,7 +3,7 @@ build: off
 stack: go 1.12
 
 before_test:
-  - choco install gcc
+  - choco install mingw
 
 test_script:
   - make test
