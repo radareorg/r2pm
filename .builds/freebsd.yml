@@ -1,0 +1,17 @@
+image: freebsd/latest
+packages:
+    - devel/meson
+    - devel/pkgconf
+    - devel/gmake
+    - devel/llvm
+    - devel/go
+    - ftp/wget
+environment:
+    CXX: clang++
+    CC: clang
+sources:
+    - https://github.com/radareorg/r2pm
+tasks:
+    - build: |
+        cd r2pm
+        gmake
