@@ -3,7 +3,7 @@ build: off
 stack: go 1.12
 
 before_test:
-  - go vet ./...
+  - choco install gcc
 
 test_script:
   - make test
