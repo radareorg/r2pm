@@ -11,6 +11,7 @@ This tool is still a work in progress.
 |----------|---------------------------------------------------------------------|
 | **GolangCI** 	| https://golangci.com/r/github.com/radareorg/r2pm|
 | **TravisCI** 	| [![Build Status](https://travis-ci.org/radareorg/r2pm.svg?branch=master)](https://travis-ci.org/radareorg/r2pm)|
+| **Appveyor** 	|[![Build status](https://ci.appveyor.com/api/projects/status/3otiyo19a6hnyog3?svg=true)](https://ci.appveyor.com/project/radare/r2pm)|
 
 ## Package example
 
