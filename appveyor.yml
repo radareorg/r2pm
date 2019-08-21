@@ -1,13 +1,17 @@
 build: off
 
+branches:
+  only:
+    - master
+
 stack: go 1.12
 
 install:
   - choco install make mingw
   - refreshenv
 
-test_script:
-  - make test
-
 build_script:
   - make all
+
+test_script:
+  - make test
