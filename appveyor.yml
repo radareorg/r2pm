@@ -4,6 +4,7 @@ stack: go 1.12
 
 install:
   - choco install make mingw
+  - refreshenv
 
 test_script:
   - make test
