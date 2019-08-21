@@ -2,8 +2,11 @@ build: off
 
 stack: go 1.12
 
-before_test:
-  - choco install mingw
+install:
+  - choco install make mingw
 
 test_script:
   - make test
+
+build_script:
+  - make all
