@@ -4,7 +4,7 @@ packages:
     - devel/pkgconf
     - devel/gmake
     - devel/llvm
-    - devel/go
+    - lang/go
     - ftp/wget
 environment:
     CXX: clang++
