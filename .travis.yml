@@ -26,9 +26,9 @@ matrix:
     - os: windows
       env: CC=gcc
       before_script: choco install make mingw
-    - os: windows
-      env: CC=clang-cl
-      before_script: choco install make llvm
+    # - os: windows
+    #   env: CC=clang-cl
+    #   before_script: choco install make llvm
 
 script:
   - cd $TRAVIS_BUILD_DIR
