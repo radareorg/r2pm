@@ -9,8 +9,8 @@ env:
   # Travis clones the repo in $GOPATH so we need to explicitely enable Go modules.
   global: GO111MODULE=on
   matrix:
-    - CC=gcc
-    - CC=clang
+    - CC=gcc CHOCO_PKG=mingw
+    - CC=clang CHOCO_PKG=llvm
 
 go:
   - 1.12.x
@@ -19,10 +19,10 @@ os:
   - linux
   - osx
   # beta now
-  # - windows
+  - windows
 
-# before_script:
-#   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install make; fi
+before_script:
+  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install make $CHOCO_PKG; fi
 
 script:
   - cd $TRAVIS_BUILD_DIR
