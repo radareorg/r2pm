@@ -18,7 +18,6 @@ go:
 os:
   - linux
   - osx
-  - windows
 
 matrix:
   include:
