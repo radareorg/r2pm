@@ -18,7 +18,10 @@ func r2pmDir() string {
 	var defaultDir string
 
 	if runtime.GOOS == "windows" {
-		defaultDir = pkg.GetenvDefault("APPDATA", "")
+		defaultDir = path.Join(
+			pkg.GetenvDefault("APPDATA", ""),
+			"radare2",
+			"r2pm")
 	} else {
 		// TODO Use XDG env variable and fallback to this
 		defaultDir = path.Join(
