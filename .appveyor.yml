@@ -14,7 +14,7 @@ environment:
       CHOCO_PKG: llvm
 
 install:
-  - choco install make $CHOCO_PKG
+  - choco install make %CHOCO_PKG%
   - refreshenv
 
 build_script:
