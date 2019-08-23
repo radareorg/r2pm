@@ -24,10 +24,10 @@ matrix:
   include:
     # beta now
     - os: windows
-      environment: CC=gcc
+      env: CC=gcc
       before_script: choco install make mingw
     - os: windows
-      environment: CC=clang-cl
+      env: CC=clang-cl
       before_script: choco install make llvm
 
 script:
