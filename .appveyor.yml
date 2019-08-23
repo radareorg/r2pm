@@ -8,13 +8,13 @@ stack: go 1.12
 
 for:
   - environment:
-      CC=gcc
+      CC: gcc
     install:
       - choco install make mingw
       - refreshenv
 
   - environment:
-      CC=clang
+      CC: clang
     install:
       - choco install make llvm
       - refreshenv
