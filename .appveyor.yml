@@ -6,12 +6,18 @@ branches:
 
 stack: go 1.12
 
+matrix:
+  fast_finish: true
+
 environment:
   matrix:
     - CC: gcc
       CHOCO_PKG: mingw
     - CC: clang
       CHOCO_PKG: llvm
+
+cache:
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 install:
   - choco install make %CHOCO_PKG%
