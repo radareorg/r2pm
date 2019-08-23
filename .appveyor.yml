@@ -6,18 +6,16 @@ branches:
 
 stack: go 1.12
 
-for:
-  - environment:
-      CC: gcc
-    install:
-      - choco install make mingw
-      - refreshenv
+environment:
+  matrix:
+    - CC: gcc
+      CHOCO_PKG: mingw
+    - CC: clang
+      CHOCO_PKG: llvm
 
-  - environment:
-      CC: clang
-    install:
-      - choco install make llvm
-      - refreshenv
+install:
+  - choco install make $CHOCO_PKG
+  - refreshenv
 
 build_script:
   - make all
