@@ -9,10 +9,9 @@ This tool is still a work in progress.
 
 | CI | Badges/URL |
 |----------|---------------------------------------------------------------------|
-| **GolangCI** 	| https://golangci.com/r/github.com/radareorg/r2pm|
-| **TravisCI** 	| [![Build Status](https://travis-ci.org/radareorg/r2pm.svg?branch=master)](https://travis-ci.org/radareorg/r2pm)|
-| **Appveyor** 	|[![Build status](https://ci.appveyor.com/api/projects/status/3otiyo19a6hnyog3?svg=true)](https://ci.appveyor.com/project/radare/r2pm)|
-| **Dependabot** 	|[![Dependabot Enablement](https://api.dependabot.com/badges/status?host=github&repo=radareorg/r2pm)](https://github.com/radareorg/r2pm/pulls?q=is%3Aopen+is%3Apr+label%3Adependencies)|
+| **GolangCI** | https://golangci.com/r/github.com/radareorg/r2pm|
+| **TravisCI** | [![Build Status](https://travis-ci.org/radareorg/r2pm.svg?branch=master)](https://travis-ci.org/radareorg/r2pm)|
+| **Dependabot** |[![Dependabot Enablement](https://api.dependabot.com/badges/status?host=github&repo=radareorg/r2pm)](https://github.com/radareorg/r2pm/pulls?q=is%3Aopen+is%3Apr+label%3Adependencies)|
 | **Sourcehut** | [![builds.sr.ht status](https://builds.sr.ht/~xvilka/r2pm.svg)](https://builds.sr.ht/~xvilka/r2pm?)|
 
 ## Package example
@@ -25,10 +24,9 @@ type: git
 repo: https://github.com/wargio/r2dec-js
 desc: "[r2-r2pipe-node] an Experimental Decompiler"
 
-install: 
+install:
   - make -C p
 
 uninstall:
   - make -C p uninstall
-
 ```
