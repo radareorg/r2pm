@@ -3,15 +3,15 @@ package dir
 import (
 	"os"
 	"testing"
+
+	"github.com/radareorg/r2pm/testdata"
 )
 
 func testSiteDir(t *testing.T) {
 	const xdgDataHomeVar = "XDG_DATA_HOME"
 
 	t.Run(xdgDataHomeVar+"=/tmp/test", func(t *testing.T) {
-		if err := os.Setenv(xdgDataHomeVar, "/tmp/test"); err != nil {
-			t.Fatalf("could not set %s: %v", xdgDataHomeVar, err)
-		}
+		testdata.SetEnvVar(t, xdgDataHomeVar, "/tmp/test")
 
 		if s := SiteDir(); s != "/tmp/test/RadareOrg/r2pm" {
 			t.Fatal(s)
