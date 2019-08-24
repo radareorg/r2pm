@@ -29,6 +29,8 @@ matrix:
     # - os: windows
     #   env: CC=clang-cl
     #   before_script: choco install make llvm
+  allow_failures:
+    - os: windows
 
 script:
   - cd $TRAVIS_BUILD_DIR
