@@ -4,33 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
-	"runtime"
 
 	"github.com/urfave/cli"
 
 	"github.com/radareorg/r2pm/internal/features"
-	"github.com/radareorg/r2pm/pkg"
+	"github.com/radareorg/r2pm/internal/util/dir"
 	"github.com/radareorg/r2pm/pkg/r2package"
 )
-
-func r2pmDir() string {
-	var defaultDir string
-
-	if runtime.GOOS == "windows" {
-		defaultDir = path.Join(
-			pkg.GetenvDefault("APPDATA", ""),
-			"radare2",
-			"r2pm")
-	} else {
-		// TODO Use XDG env variable and fallback to this
-		defaultDir = path.Join(
-			pkg.GetenvDefault("HOME", ""),
-			".local/share/radare2/r2pm")
-	}
-
-	return pkg.GetenvDefault("R2PM_DIR", defaultDir)
-}
 
 func getArgumentOrExit(c *cli.Context) string {
 	packageName := c.Args().First()
@@ -47,7 +27,7 @@ func getArgumentOrExit(c *cli.Context) string {
 }
 
 func main() {
-	r2pmDir := r2pmDir()
+	r2pmDir := dir.SiteDir()
 
 	listAvailablePackages := func(c *cli.Context) error {
 		packages, err := features.ListAvailable(r2pmDir)
