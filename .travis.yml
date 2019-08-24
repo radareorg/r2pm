@@ -7,18 +7,30 @@ language: go
 
 env:
   # Travis clones the repo in $GOPATH so we need to explicitely enable Go modules.
-  GO111MODULE=on
+  global: GO111MODULE=on
+  matrix:
+    - CC=gcc
+    - CC=clang
 
 go:
   - 1.12.x
 
+os:
+  - linux
+  - osx
+
 matrix:
-  include:
-    - os: linux
-    - os: osx
-    # - os: windows
-    #   before_install:
-    #     - choco install make
+  fast_finish: true
+  # include:
+  #   # beta now
+  #   - os: windows
+  #     env: CC=gcc
+  #     before_script: choco install make mingw
+  #   # - os: windows
+  #   #   env: CC=clang-cl
+  #   #   before_script: choco install make llvm
+  # allow_failures:
+  #   - os: windows
 
 script:
   - cd $TRAVIS_BUILD_DIR
