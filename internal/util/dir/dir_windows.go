@@ -1,8 +1,8 @@
 package dir
 
-func platformPrefix() string {
-	var prefix string
+import "os"
 
+func platformPrefix() string {
 	if appData := os.Getenv("APPDATA"); appData != "" {
 		return appData
 	}

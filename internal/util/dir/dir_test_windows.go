@@ -1,6 +1,10 @@
 package dir
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/radareorg/r2pm/testdata"
+)
 
 func TestSiteDir(t *testing.T) {
 	t.Run(`APPDATA=C:\temp`, func(t *testing.T) {
