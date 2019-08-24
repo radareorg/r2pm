@@ -13,6 +13,7 @@ This tool is still a work in progress.
 | **TravisCI** 	| [![Build Status](https://travis-ci.org/radareorg/r2pm.svg?branch=master)](https://travis-ci.org/radareorg/r2pm)|
 | **Appveyor** 	|[![Build status](https://ci.appveyor.com/api/projects/status/3otiyo19a6hnyog3?svg=true)](https://ci.appveyor.com/project/radare/r2pm)|
 | **Dependabot** 	|[![Dependabot Enablement](https://api.dependabot.com/badges/status?host=github&repo=radareorg/r2pm)](https://github.com/radareorg/r2pm/pulls?q=is%3Aopen+is%3Apr+label%3Adependencies)|
+| **Sourcehut** | [![builds.sr.ht status](https://builds.sr.ht/~xvilka/r2pm.svg)](https://builds.sr.ht/~xvilka/r2pm?)|
 
 ## Package example
 
