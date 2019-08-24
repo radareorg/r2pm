@@ -13,8 +13,8 @@ environment:
   matrix:
     - CC: gcc
       CHOCO_PKG: mingw
-    - CC: clang
-      CHOCO_PKG: llvm
+    # - CC: clang
+    #   CHOCO_PKG: llvm
 
 cache:
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
