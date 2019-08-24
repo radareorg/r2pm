@@ -16,10 +16,6 @@ environment:
     # - CC: clang
     #   CHOCO_PKG: llvm
 
-cache:
-  - C:\ProgramData\chocolatey\bin -> appveyor.yml
-  - C:\ProgramData\chocolatey\lib -> appveyor.yml
-
 install:
   - choco install make %CHOCO_PKG%
   - refreshenv
