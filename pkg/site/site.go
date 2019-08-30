@@ -30,7 +30,7 @@ func New(path string) (Site, error) {
 
 	for _, p := range paths {
 		if err := os.MkdirAll(p, 0755); err != nil {
-			return Site{}, xerrors.Errorf("could not create %s: %w")
+			return Site{}, xerrors.Errorf("could not create %s: %w", p, err)
 		}
 	}
 
