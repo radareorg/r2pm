@@ -58,6 +58,15 @@ func InstallFromFile(r2pmDir, path string) error {
 	return s.InstallPackageFromFile(path)
 }
 
+func InstallRadare2(r2pmDir, r2Dir string) error {
+	s, err := site.New(r2pmDir)
+	if err != nil {
+		return err
+	}
+
+	return s.InstallRadare2(r2Dir)
+}
+
 func ListAvailable(r2pmDir string) ([]r2package.Info, error) {
 	s, err := site.New(r2pmDir)
 	if err != nil {

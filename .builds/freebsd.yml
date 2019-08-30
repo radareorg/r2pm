@@ -15,3 +15,6 @@ tasks:
     - build: |
         cd r2pm
         gmake
+    - test: |
+        cd r2pm
+        ./r2pm --debug install radare2

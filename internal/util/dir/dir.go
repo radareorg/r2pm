@@ -5,12 +5,23 @@ import (
 	"path/filepath"
 )
 
-const SiteDirEnvVar = "R2PM_SITEDIR"
+const (
+	orgSubDir     = "RadareOrg"
+	SiteDirEnvVar = "R2PM_SITEDIR"
+)
+
+func R2Dir() string {
+	return filepath.Join(orgSubdDir(), "radare2")
+}
 
 func SiteDir() string {
 	if envVar := os.Getenv(SiteDirEnvVar); envVar != "" {
 		return envVar
 	}
 
-	return filepath.Join(platformPrefix(), "RadareOrg", "r2pm")
+	return filepath.Join(orgSubdDir(), "r2pm")
+}
+
+func orgSubdDir() string {
+	return filepath.Join(platformPrefix(), orgSubDir)
 }

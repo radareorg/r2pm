@@ -48,6 +48,7 @@ script:
   - ./r2pm --debug init
   # r2dec must be present in the database
   - ./r2pm --debug search dec | grep -q Decompiler
+  - ./r2pm --debug install radare2
   - ./r2pm --debug install -f test/test.yaml
   - ./r2pm --debug list installed | grep -q test
   - ./r2pm --debug delete
