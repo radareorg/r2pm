@@ -29,7 +29,7 @@ func (g gitInstaller) install(inDir string) error {
 		return xerrors.Errorf("could not add the remote: %w", err)
 	}
 
-	if err := repo.Pull(remoteName, remoteBranch); err != nil {
+	if err := repo.Pull(remoteName, remoteBranch, []string{"--depth=1"}); err != nil {
 		return xerrors.Errorf("could not git pull: %w", err)
 	}
 

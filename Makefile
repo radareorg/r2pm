@@ -8,9 +8,12 @@ LIB := libr2pm${LIB_EXT}
 
 all: r2pm r2pm_c ${LIB}
 
-.PHONY: test
+.PHONY: tests integration-tests
 
-test:
+integration-tests:
+	go test -tags=integration ./...
+
+tests:
 	go test ./...
 
 r2pm: $(wildcard internal/**/*.go pkg/**/*.go main.go)

@@ -42,7 +42,7 @@ func (s Site) InstallRadare2(prefix string) error {
 		}
 	}
 
-	if err := repo.Pull("origin", "master"); err != nil {
+	if err := repo.Pull("origin", "master", []string{"--depth=1"}); err != nil {
 		return err
 	}
 

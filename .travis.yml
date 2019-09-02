@@ -53,5 +53,8 @@ script:
   - ./r2pm --debug list installed | grep -q test
   - ./r2pm --debug delete
 
+  # run the integration tests
+  - make integration-tests
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)

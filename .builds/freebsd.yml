@@ -1,13 +1,9 @@
 image: freebsd/latest
 packages:
-    - devel/meson
-    - devel/pkgconf
     - devel/gmake
     - devel/llvm
     - lang/go
-    - ftp/wget
 environment:
-    CXX: clang++
     CC: clang
 sources:
     - https://github.com/radareorg/r2pm
@@ -17,4 +13,4 @@ tasks:
         gmake
     - test: |
         cd r2pm
-        ./r2pm --debug install radare2
+        make integration-tests

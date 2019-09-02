@@ -43,9 +43,9 @@ func (r Repository) AddRemote(name, url string) error {
 	return r.Run("remote", "add", name, url)
 }
 
-func (r Repository) Pull(remote, branch string) error {
+func (r Repository) Pull(remote, branch string, opts []string) error {
 	// Do not send the remote and branch names if they are empty
-	args := []string{"pull"}
+	args := append([]string{"pull"}, opts...)
 
 	if remote != "" {
 		args = append(args, remote)
