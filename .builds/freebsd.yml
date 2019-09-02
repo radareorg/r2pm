@@ -13,4 +13,4 @@ tasks:
         gmake
     - test: |
         cd r2pm
-        make integration-tests
+        gmake integration-tests
