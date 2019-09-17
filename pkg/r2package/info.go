@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v2"
 )
 
@@ -47,7 +46,7 @@ func (i Info) installer() (installer, error) {
 	case "git":
 		return gitInstaller{i}, nil
 	default:
-		return nil, xerrors.Errorf("%q: unhandled package type", i.Type)
+		return nil, fmt.Errorf("%q: unhandled package type", i.Type)
 	}
 }
 
@@ -82,7 +81,7 @@ func ReadDir(path string) ([]InfoFile, error) {
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
-		return nil, xerrors.Errorf("could not read %s: %w", path, err)
+		return nil, fmt.Errorf("could not read %s: %w", path, err)
 	}
 
 	packages := make([]InfoFile, 0, len(files))

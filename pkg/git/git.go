@@ -1,9 +1,8 @@
 package git
 
 import (
+	"fmt"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/radareorg/r2pm/pkg/process"
 )
@@ -14,11 +13,11 @@ type Repository string
 
 func Init(path string, force bool) (Repository, error) {
 	if _, err := Open(path); err == nil && !force {
-		return "", xerrors.Errorf("cannot init: %s is already a git repository", path)
+		return "", fmt.Errorf("cannot init: %s is already a git repository", path)
 	}
 
 	if err := Run([]string{"init"}, path); err != nil {
-		return "", xerrors.Errorf("error while running git init in %s: %w", path, err)
+		return "", fmt.Errorf("error while running git init in %s: %w", path, err)
 	}
 
 	return Repository(path), nil
@@ -27,7 +26,7 @@ func Init(path string, force bool) (Repository, error) {
 func Open(path string) (Repository, error) {
 	absPath, err := filepath.Abs(path)
 	if err != nil {
-		return "", xerrors.Errorf(
+		return "", fmt.Errorf(
 			"could not get the absolute path for %s: %w",
 			path,
 			err)

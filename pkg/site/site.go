@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"golang.org/x/xerrors"
-
 	"github.com/radareorg/r2pm/pkg"
 	"github.com/radareorg/r2pm/pkg/database"
 	"github.com/radareorg/r2pm/pkg/r2package"
@@ -30,7 +28,7 @@ func New(path string) (Site, error) {
 
 	for _, p := range paths {
 		if err := os.MkdirAll(p, 0755); err != nil {
-			return Site{}, xerrors.Errorf("could not create %s: %w")
+			return Site{}, fmt.Errorf("could not create %s: %w", p, err)
 		}
 	}
 
@@ -44,7 +42,7 @@ func (s Site) Database() database.Database {
 func (s Site) InstallPackage(name string) error {
 	ifile, err := s.Database().GetInfoFile(name)
 	if err != nil {
-		return xerrors.Errorf("could not find the info file: %w", err)
+		return fmt.Errorf("could not find the info file: %w", err)
 	}
 
 	return s.installFromInfoFile(ifile)
@@ -58,7 +56,7 @@ func (s Site) InstalledPackage(name string) (r2package.InfoFile, error) {
 func (s Site) InstallPackageFromFile(path string) error {
 	ifile, err := r2package.FromFile(path)
 	if err != nil {
-		return xerrors.Errorf("could not read %s as a package info file: %w", path, err)
+		return fmt.Errorf("could not read %s as a package info file: %w", path, err)
 	}
 
 	return s.installFromInfoFile(ifile)
@@ -73,13 +71,13 @@ func (s Site) UninstallPackage(name string) error {
 
 	dir, err := s.getPackageSubDir(ifile.Type)
 	if err != nil {
-		return xerrors.Errorf("could not determine where %s is installed: %w", name, err)
+		return fmt.Errorf("could not determine where %s is installed: %w", name, err)
 	}
 
 	installedDir := filepath.Join(dir, ifile.Name)
 
 	if err := ifile.Uninstall(installedDir); err != nil {
-		return xerrors.Errorf("could not uninstall %s: %w", name, err)
+		return fmt.Errorf("could not uninstall %s: %w", name, err)
 	}
 
 	return os.Remove(ifile.Path)
@@ -90,7 +88,7 @@ func (s Site) ListInstalledPackages() ([]r2package.Info, error) {
 
 	ifiles, err := r2package.ReadDir(dir)
 	if err != nil {
-		return nil, xerrors.Errorf("could not read %s: %w", dir, err)
+		return nil, fmt.Errorf("could not read %s: %w", dir, err)
 	}
 
 	packages := make([]r2package.Info, 0, len(ifiles))
@@ -122,11 +120,11 @@ func (s Site) Upgrade(name string) error {
 	}
 
 	if err := s.UninstallPackage(name); err != nil {
-		return xerrors.Errorf("could not uninstall %s: %w", name, err)
+		return fmt.Errorf("could not uninstall %s: %w", name, err)
 	}
 
 	if err := s.InstallPackage(name); err != nil {
-		return xerrors.Errorf("could not install %s: %w", name, err)
+		return fmt.Errorf("could not install %s: %w", name, err)
 	}
 
 	return nil
@@ -145,7 +143,7 @@ func (s Site) getPackageSubDir(pkgType string) (string, error) {
 	case "git":
 		return s.gitSubDir(), nil
 	default:
-		return "", xerrors.Errorf("%q: unhandled package type", pkgType)
+		return "", fmt.Errorf("%q: unhandled package type", pkgType)
 	}
 }
 
@@ -156,20 +154,20 @@ func (s Site) gitSubDir() string {
 func (s Site) installFromInfoFile(ifile r2package.InfoFile) error {
 	dir, err := s.getPackageSubDir(ifile.Type)
 	if err != nil {
-		return xerrors.Errorf("could not determine where to install %s: %w", ifile.Name, err)
+		return fmt.Errorf("could not determine where to install %s: %w", ifile.Name, err)
 	}
 
 	dir = filepath.Join(dir, ifile.Name)
 
 	if err := os.Mkdir(dir, 0755); err != nil {
-		return xerrors.Errorf("could not create %s: %w", dir, err)
+		return fmt.Errorf("could not create %s: %w", dir, err)
 	}
 
 	if err := ifile.Install(dir); err != nil {
 		// delete the directory that we just created
 		os.RemoveAll(dir)
 
-		return xerrors.Errorf("could not install %s in %s: %w", ifile.Name, dir, err)
+		return fmt.Errorf("could not install %s in %s: %w", ifile.Name, dir, err)
 	}
 
 	installedFilename := filepath.Join(s.installedSubDir(), ifile.Name)
