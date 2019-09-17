@@ -48,7 +48,7 @@ func (s Site) InstallRadare2(prefix string) error {
 
 	for _, f := range z.File {
 		// Remove the first component of the path
-		components := strings.SplitN(f.Name, string(os.PathSeparator), 2)
+		components := strings.SplitN(f.Name, "/", 2)
 		if len(components) == 1 {
 			// top-level directory - do nothing
 			continue
