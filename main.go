@@ -176,6 +176,15 @@ func main() {
 
 				return features.Uninstall(r2pmDir, packageName)
 			},
+			Subcommands: []cli.Command{
+				{
+					Name:  "radare2",
+					Usage: "uninstall radare2",
+					Action: func(c *cli.Context) error {
+						return features.UninstallRadare2(r2pmDir, r2Dir)
+					},
+				},
+			},
 		},
 		{
 			Name:      "upgrade",
