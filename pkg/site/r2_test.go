@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -33,7 +34,13 @@ func TestInstallRadare2(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r2Path := filepath.Join(prefix, "bin", "r2")
+	r2Bin := "r2"
+
+	if runtime.GOOS == "windows" {
+		r2Bin = "r2.bat"
+	}
+
+	r2Path := filepath.Join(prefix, "bin", r2Bin)
 
 	if _, err := os.Stat(r2Path); err != nil {
 		t.Fatalf("Could not stat(%q)", r2Path)

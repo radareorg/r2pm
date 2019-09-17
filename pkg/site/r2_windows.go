@@ -42,13 +42,6 @@ func (s Site) InstallRadare2(prefix string) error {
 		return xerrors.Errorf("could not create a zip reader: %v", err)
 	}
 
-	// Skip the top-level directory
-	for i := 1; i < len(z.File); i++ {
-		if i == 0 {
-			//
-		}
-	}
-
 	const dirPerm = 0755
 
 	for _, f := range z.File {
