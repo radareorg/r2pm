@@ -13,7 +13,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func (s Site) InstallRadare22(prefix string) error {
+func (s Site) InstallRadare2(prefix string) error {
 	url := "http://radare.mikelloc.com/get/3.6.0/radare2-msvc_64-3.6.0.zip"
 
 	fd, err := ioutil.TempFile("", "r2pm_*.zip")
