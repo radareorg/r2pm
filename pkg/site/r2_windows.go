@@ -13,10 +13,10 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func (s Site) InstallRadare2(prefix string) error {
+func (s Site) InstallRadare22(prefix string) error {
 	url := "http://radare.mikelloc.com/get/3.6.0/radare2-msvc_64-3.6.0.zip"
 
-	fd, err := ioutil.TempFile("", "r2pm_*")
+	fd, err := ioutil.TempFile("", "r2pm_*.zip")
 	if err != nil {
 		return xerrors.Errorf("could not create a temporary file: %v", err)
 	}
@@ -44,9 +44,11 @@ func (s Site) InstallRadare2(prefix string) error {
 
 	const dirPerm = 0755
 
+	log.Print("Extracting " + fd.Name())
+
 	for _, f := range z.File {
 		// Remove the first component of the path
-		components := strings.SplitN(f.Name, string(os.PathSeparator), 1)
+		components := strings.SplitN(f.Name, string(os.PathSeparator), 2)
 		if len(components) == 1 {
 			// top-level directory - do nothing
 			continue
@@ -66,7 +68,7 @@ func (s Site) InstallRadare2(prefix string) error {
 		}
 
 		// File
-		log.Print("Extracting " + target)
+		log.Print("Processing file " + target)
 
 		dir := filepath.Dir(target)
 		if err := os.MkdirAll(dir, dirPerm); err != nil {
@@ -77,17 +79,18 @@ func (s Site) InstallRadare2(prefix string) error {
 		if err != nil {
 			return xerrors.Errorf("could not extract %s: %v", f.Name, err)
 		}
-		defer zipFd.Close()
 
 		fsFd, err := os.Create(target)
 		if err != nil {
 			return xerrors.Errorf("could not create %s: %v", target, err)
 		}
-		defer fsFd.Close()
 
 		if _, err := bufio.NewReader(zipFd).WriteTo(fsFd); err != nil {
 			return xerrors.Errorf("could not write %s: %v", target, err)
 		}
+
+		zipFd.Close()
+		fsFd.Close()
 	}
 
 	return nil
