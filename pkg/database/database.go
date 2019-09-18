@@ -1,11 +1,10 @@
 package database
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
-
-	"golang.org/x/xerrors"
 
 	"github.com/radareorg/r2pm/pkg/git"
 	"github.com/radareorg/r2pm/pkg/r2package"
@@ -40,21 +39,26 @@ func (d Database) InitOrUpdate() error {
 
 		repo, err = git.Init(d.path, false)
 		if err != nil {
-			return xerrors.Errorf("could not initialize the database repo: %w", err)
+			return fmt.Errorf("could not initialize the database repo: %w", err)
 		}
 
 		log.Printf("Setting %q as master", url)
 
 		if err := repo.AddRemote(remoteName, url); err != nil {
-			return xerrors.Errorf("could not add the remote: %w", err)
+			return fmt.Errorf("could not add the remote: %w", err)
 		}
 	}
 
 	log.Printf("Pulling the last revision from %s/%s", remoteName, remoteBranch)
 
 	// assume origin / master
+<<<<<<< HEAD
 	if err := repo.Pull(remoteName, remoteBranch, nil); err != nil {
 		return xerrors.Errorf("could not pull the latest revision: %w", err)
+=======
+	if err := repo.Pull(remoteName, remoteBranch); err != nil {
+		return fmt.Errorf("could not pull the latest revision: %w", err)
+>>>>>>> master
 	}
 
 	return nil
@@ -76,7 +80,7 @@ func (d Database) ListAvailablePackages() ([]r2package.Info, error) {
 
 	ifiles, err := r2package.ReadDir(dir)
 	if err != nil {
-		return nil, xerrors.Errorf("could not read %s: %w", dir, err)
+		return nil, fmt.Errorf("could not read %s: %w", dir, err)
 	}
 
 	packages := make([]r2package.Info, 0, len(ifiles))

@@ -10,8 +10,6 @@ import (
 	"sort"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/radareorg/r2pm/pkg/r2package"
 	"github.com/radareorg/r2pm/pkg/site"
 )
@@ -25,7 +23,7 @@ const (
 func Delete(r2pmDir string) error {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return xerrors.Errorf(msgCannotInitialize, err)
+		return fmt.Errorf(msgCannotInitialize, err)
 	}
 
 	return s.Remove()
@@ -34,7 +32,7 @@ func Delete(r2pmDir string) error {
 func Init(r2pmDir string) error {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return xerrors.Errorf("could not initialize: %w", err)
+		return fmt.Errorf("could not initialize: %w", err)
 	}
 
 	return s.Database().InitOrUpdate()
@@ -43,7 +41,7 @@ func Init(r2pmDir string) error {
 func Install(r2pmDir, packageName string) error {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return xerrors.Errorf(msgCannotInitialize, err)
+		return fmt.Errorf(msgCannotInitialize, err)
 	}
 
 	return s.InstallPackage(packageName)
@@ -52,7 +50,7 @@ func Install(r2pmDir, packageName string) error {
 func InstallFromFile(r2pmDir, path string) error {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return xerrors.Errorf(msgCannotInitialize, err)
+		return fmt.Errorf(msgCannotInitialize, err)
 	}
 
 	return s.InstallPackageFromFile(path)
@@ -79,7 +77,7 @@ func UninstallRadare2(r2pmDir, r2Dir string) error {
 func ListAvailable(r2pmDir string) ([]r2package.Info, error) {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return nil, xerrors.Errorf(msgCannotInitialize, err)
+		return nil, fmt.Errorf(msgCannotInitialize, err)
 	}
 
 	return s.Database().ListAvailablePackages()
@@ -88,7 +86,7 @@ func ListAvailable(r2pmDir string) ([]r2package.Info, error) {
 func ListInstalled(r2pmDir string) ([]r2package.Info, error) {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return nil, xerrors.Errorf(msgCannotInitialize, err)
+		return nil, fmt.Errorf(msgCannotInitialize, err)
 	}
 
 	return s.ListInstalledPackages()
@@ -97,12 +95,12 @@ func ListInstalled(r2pmDir string) ([]r2package.Info, error) {
 func Search(r2pmDir, pattern string) ([]r2package.Info, error) {
 	re, err := regexp.Compile(pattern)
 	if err != nil {
-		return nil, xerrors.Errorf("%q is not a valid regex: %w", pattern, err)
+		return nil, fmt.Errorf("%q is not a valid regex: %w", pattern, err)
 	}
 
 	packages, err := ListAvailable(r2pmDir)
 	if err != nil {
-		return nil, xerrors.Errorf("could not get the list of packages: %w", err)
+		return nil, fmt.Errorf("could not get the list of packages: %w", err)
 	}
 
 	matches := make([]r2package.Info, 0, len(packages))
@@ -127,7 +125,7 @@ func SetDebug(value bool) {
 func Uninstall(r2pmDir, packageName string) error {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return xerrors.Errorf(msgCannotInitialize, err)
+		return fmt.Errorf(msgCannotInitialize, err)
 	}
 
 	return s.UninstallPackage(packageName)
@@ -136,7 +134,7 @@ func Uninstall(r2pmDir, packageName string) error {
 func Upgrade(r2pmDir, packageName string) error {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return xerrors.Errorf(msgCannotInitialize, err)
+		return fmt.Errorf(msgCannotInitialize, err)
 	}
 
 	return s.Upgrade(packageName)
@@ -145,7 +143,7 @@ func Upgrade(r2pmDir, packageName string) error {
 func UpgradeAll(r2pmDir string) error {
 	s, err := site.New(r2pmDir)
 	if err != nil {
-		return xerrors.Errorf(msgCannotInitialize, err)
+		return fmt.Errorf(msgCannotInitialize, err)
 	}
 
 	packages, err := s.ListInstalledPackages()
