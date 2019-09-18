@@ -3,6 +3,7 @@
 package site
 
 import (
+	"bytes"
 	"log"
 	"os"
 	"os/exec"
@@ -65,12 +66,15 @@ func (s Site) InstallRadare2(prefix string) error {
 		makeBin = "gmake"
 	}
 
+	var stderr bytes.Buffer
+
 	cmdConfigure := exec.Command("./configure", "--prefix="+prefix)
 	cmdConfigure.Dir = srcDir
 	cmdConfigure.Env = env
+	cmdConfigure.Stderr = &stderr
 
 	if err := cmdConfigure.Run(); err != nil {
-		log.Print(cmdConfigure.Stderr)
+		log.Print(stderr.String())
 		return err
 	}
 
