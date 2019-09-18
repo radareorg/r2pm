@@ -28,11 +28,7 @@ func New(path string) (Site, error) {
 
 	for _, p := range paths {
 		if err := os.MkdirAll(p, 0755); err != nil {
-<<<<<<< HEAD
-			return Site{}, xerrors.Errorf("could not create %s: %w", p, err)
-=======
 			return Site{}, fmt.Errorf("could not create %s: %w", p, err)
->>>>>>> master
 		}
 	}
 
