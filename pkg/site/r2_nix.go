@@ -3,12 +3,12 @@
 package site
 
 import (
-	"bytes"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -58,23 +58,22 @@ func (s Site) InstallRadare2(prefix string) error {
 		return err
 	}
 
-	env := make([]string, 0)
+	env := os.Environ()
 	makeBin := "make"
 
 	if runtime.GOOS == "freebsd" {
-		env = append(env, "CC=clang")
 		makeBin = "gmake"
+		env = append(env, "CC=clang")
 	}
-
-	var stderr bytes.Buffer
 
 	cmdConfigure := exec.Command("./configure", "--prefix="+prefix)
 	cmdConfigure.Dir = srcDir
 	cmdConfigure.Env = env
-	cmdConfigure.Stderr = &stderr
 
-	if err := cmdConfigure.Run(); err != nil {
-		log.Print(stderr.String())
+	log.Print("Running " + strings.Join(cmdConfigure.Args, " "))
+
+	if output, err := cmdConfigure.CombinedOutput(); err != nil {
+		log.Print(output)
 		return err
 	}
 

@@ -34,7 +34,7 @@ func Open(path string) (Repository, error) {
 
 	args := []string{"--git-dir", filepath.Join(absPath, ".git"), "rev-parse"}
 
-	// Check that there absPath contains a .git Repository
+	// Check that absPath contains a .git Repository
 	return Repository(path), Run(args, "")
 }
 

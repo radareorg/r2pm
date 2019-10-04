@@ -25,10 +25,7 @@ func Run(binary string, args []string, wd string) (Result, error) {
 		wd = "."
 	}
 
-	log.Printf(
-		"Running %q in %s",
-		strings.Join(append([]string{binary}, args...), " "),
-		wd)
+	log.Printf("Running %q in %s", strings.Join(cmd.Args, " "), wd)
 
 	return res, cmd.Run()
 }
