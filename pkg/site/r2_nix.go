@@ -72,8 +72,8 @@ func (s Site) InstallRadare2(prefix string) error {
 
 	log.Print("Running " + strings.Join(cmdConfigure.Args, " "))
 
-	if output, err := cmdConfigure.CombinedOutput(); err != nil {
-		log.Print(output)
+	if out, err := cmdConfigure.CombinedOutput(); err != nil {
+		log.Print(string(out))
 		return err
 	}
 
@@ -84,7 +84,7 @@ func (s Site) InstallRadare2(prefix string) error {
 	log.Print("Running " + strings.Join(cmdMake.Args, " "))
 
 	if out, err := cmdMake.Output(); err != nil {
-		log.Print(out)
+		log.Print(string(out))
 		return err
 	}
 
