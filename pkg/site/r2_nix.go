@@ -81,7 +81,10 @@ func (s Site) InstallRadare2(prefix string) error {
 	cmdMake.Dir = srcDir
 	cmdMake.Env = env
 
-	if err := cmdMake.Run(); err != nil {
+	log.Print("Running " + strings.Join(cmdMake.Args, " "))
+
+	if out, err := cmdMake.Output(); err != nil {
+		log.Print(out)
 		return err
 	}
 
