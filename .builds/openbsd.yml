@@ -1,0 +1,16 @@
+image: openbsd/latest
+packages:
+    - devel/gmake
+    - devel/llvm
+    - lang/go
+environment:
+    CC: clang
+sources:
+    - https://github.com/radareorg/r2pm
+tasks:
+    - build: |
+        cd r2pm
+        gmake
+    - test: |
+        cd r2pm
+        gmake integration-tests

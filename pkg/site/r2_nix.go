@@ -1,4 +1,4 @@
-// +build darwin freebsd linux
+// +build darwin freebsd linux openbsd
 
 package site
 
