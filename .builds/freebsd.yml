@@ -5,6 +5,7 @@ packages:
     - lang/go
 environment:
     CC: clang
+    COMPILER: clang # Required to build radare2
 sources:
     - https://github.com/radareorg/r2pm
 tasks:
