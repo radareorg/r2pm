@@ -59,11 +59,6 @@ func (s Site) InstallRadare2(prefix string) error {
 	}
 
 	env := os.Environ()
-	makeBin := "make"
-
-	if runtime.GOOS == "freebsd" {
-		makeBin = "gmake"
-	}
 
 	cmdConfigure := exec.Command("./configure", "--prefix="+prefix)
 	cmdConfigure.Dir = srcDir
@@ -74,6 +69,12 @@ func (s Site) InstallRadare2(prefix string) error {
 	if out, err := cmdConfigure.CombinedOutput(); err != nil {
 		log.Print(string(out))
 		return err
+	}
+
+	makeBin := "make"
+
+	if runtime.GOOS == "freebsd" {
+		makeBin = "gmake"
 	}
 
 	cmdMake := exec.Command(makeBin)
