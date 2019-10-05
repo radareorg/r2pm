@@ -63,7 +63,6 @@ func (s Site) InstallRadare2(prefix string) error {
 
 	if runtime.GOOS == "freebsd" {
 		makeBin = "gmake"
-		env = append(env, "CC=clang")
 	}
 
 	cmdConfigure := exec.Command("./configure", "--prefix="+prefix)
