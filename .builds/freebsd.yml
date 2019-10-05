@@ -13,5 +13,6 @@ tasks:
         cd r2pm
         gmake
     - test: |
+        ln -s `which clang` /usr/bin/gcc
         cd r2pm
         gmake integration-tests
