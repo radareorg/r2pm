@@ -5,7 +5,7 @@ packages:
     - lang/go
 environment:
     CC: clang
-    COMPILER: clang # Required to build radare2
+    HOST_CC: clang # Required to build radare2
 sources:
     - https://github.com/radareorg/r2pm
 tasks:
@@ -13,6 +13,5 @@ tasks:
         cd r2pm
         gmake
     - test: |
-        ln -s `which clang` /usr/bin/gcc
         cd r2pm
         gmake integration-tests
