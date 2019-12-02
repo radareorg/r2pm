@@ -10,8 +10,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"golang.org/x/xerrors"
 )
 
 func (s Site) InstallRadare2(prefix, version string) error {
@@ -19,7 +17,7 @@ func (s Site) InstallRadare2(prefix, version string) error {
 
 	fd, err := ioutil.TempFile("", "r2pm_*.zip")
 	if err != nil {
-		return xerrors.Errorf("could not create a temporary file: %v", err)
+		return fmt.Errorf("could not create a temporary file: %v", err)
 	}
 	defer fd.Close()
 
@@ -27,20 +25,20 @@ func (s Site) InstallRadare2(prefix, version string) error {
 
 	res, err := http.Get(url)
 	if err != nil {
-		return xerrors.Errorf("error while downloading: %v", err)
+		return fmt.Errorf("error while downloading: %v", err)
 	}
 	defer res.Body.Close()
 
 	n, err := bufio.NewReader(res.Body).WriteTo(fd)
 	if err != nil {
-		return xerrors.Errorf("could not write the response body: %v", err)
+		return fmt.Errorf("could not write the response body: %v", err)
 	}
 
 	fd.Seek(0, 0)
 
 	z, err := zip.NewReader(fd, n)
 	if err != nil {
-		return xerrors.Errorf("could not create a zip reader: %v", err)
+		return fmt.Errorf("could not create a zip reader: %v", err)
 	}
 
 	const dirPerm = 0755
@@ -78,16 +76,16 @@ func (s Site) InstallRadare2(prefix, version string) error {
 
 		zipFd, err := f.Open()
 		if err != nil {
-			return xerrors.Errorf("could not extract %s: %v", f.Name, err)
+			return fmt.Errorf("could not extract %s: %v", f.Name, err)
 		}
 
 		fsFd, err := os.Create(target)
 		if err != nil {
-			return xerrors.Errorf("could not create %s: %v", target, err)
+			return fmt.Errorf("could not create %s: %v", target, err)
 		}
 
 		if _, err := bufio.NewReader(zipFd).WriteTo(fsFd); err != nil {
-			return xerrors.Errorf("could not write %s: %v", target, err)
+			return fmt.Errorf("could not write %s: %v", target, err)
 		}
 
 		zipFd.Close()

@@ -11,8 +11,6 @@ import (
 	"runtime"
 	"strings"
 
-	"golang.org/x/xerrors"
-
 	"github.com/radareorg/r2pm/pkg/git"
 	"github.com/radareorg/r2pm/pkg/process"
 )
@@ -21,7 +19,7 @@ func (s Site) InstallRadare2(prefix, version string) error {
 	srcDir := filepath.Join(s.gitSubDir(), "radare2")
 
 	if err := os.MkdirAll(srcDir, 0755); err != nil {
-		return xerrors.Errorf(
+		return fmt.Errorf(
 			"could not create the filesystem tree for %s: %v",
 			srcDir,
 			err)
@@ -35,14 +33,14 @@ func (s Site) InstallRadare2(prefix, version string) error {
 		log.Print("Running git init")
 
 		if repo, err = git.Init(srcDir, false); err != nil {
-			return xerrors.Errorf("could not run git init: %v", err)
+			return fmt.Errorf("could not run git init: %v", err)
 		}
 
 		origin := "https://github.com/radare/radare2"
 
 		log.Print("Setting the origin to " + origin)
 		if err = repo.AddRemote("origin", origin); err != nil {
-			return xerrors.Errorf("could not set origin: %v", err)
+			return fmt.Errorf("could not set origin: %v", err)
 		}
 	}
 
