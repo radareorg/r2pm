@@ -6,6 +6,7 @@ packages:
 environment:
     CC: clang
     HOST_CC: clang # Required to build radare2
+    R2_VERSION: 4.0.0 # Required for the integration tests
 sources:
     - https://github.com/radareorg/r2pm
 tasks:
