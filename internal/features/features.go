@@ -56,13 +56,13 @@ func InstallFromFile(r2pmDir, path string) error {
 	return s.InstallPackageFromFile(path)
 }
 
-func InstallRadare2(r2pmDir, r2Dir string) error {
+func InstallRadare2(r2pmDir, r2Dir, version string) error {
 	s, err := site.New(r2pmDir)
 	if err != nil {
 		return err
 	}
 
-	return s.InstallRadare2(r2Dir)
+	return s.InstallRadare2(r2Dir, version)
 }
 
 func UninstallRadare2(r2pmDir, r2Dir string) error {

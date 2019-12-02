@@ -3,6 +3,7 @@
 package site
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -16,7 +17,7 @@ import (
 	"github.com/radareorg/r2pm/pkg/process"
 )
 
-func (s Site) InstallRadare2(prefix string) error {
+func (s Site) InstallRadare2(prefix, version string) error {
 	srcDir := filepath.Join(s.gitSubDir(), "radare2")
 
 	if err := os.MkdirAll(srcDir, 0755); err != nil {
@@ -45,7 +46,15 @@ func (s Site) InstallRadare2(prefix string) error {
 		}
 	}
 
-	if err := repo.Pull("origin", "master", []string{"--depth=1"}); err != nil {
+	if err := repo.Fetch(); err != nil {
+		return fmt.Errorf("Could not fetch: %v", err)
+	}
+
+	if err := repo.Checkout(version); err != nil {
+		return fmt.Errorf("could not checkout %q: %v", version, err)
+	}
+
+	if err := repo.Pull("origin", version, nil); err != nil {
 		return err
 	}
 

@@ -3,6 +3,7 @@ package site
 import (
 	"archive/zip"
 	"bufio"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,8 +14,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-func (s Site) InstallRadare2(prefix string) error {
-	url := "http://radare.mikelloc.com/get/3.6.0/radare2-msvc_64-3.6.0.zip"
+func (s Site) InstallRadare2(prefix, version string) error {
+	url := fmt.Sprintf("http://radare.mikelloc.com/get/%s/radare2-msvc_64-%s.zip", version, version)
 
 	fd, err := ioutil.TempFile("", "r2pm_*.zip")
 	if err != nil {

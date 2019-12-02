@@ -101,8 +101,9 @@ func main() {
 			},
 			Subcommands: []cli.Command{
 				{
-					Name:  "radare2",
-					Usage: "install radare2",
+					Name:      "radare2",
+					Usage:     "install radare2",
+					ArgsUsage: "VERSION",
 					Flags: []cli.Flag{
 						cli.StringFlag{
 							Name:  "p",
@@ -111,12 +112,18 @@ func main() {
 						},
 					},
 					Action: func(c *cli.Context) error {
+						if c.NArg() != 1 {
+							return errors.New("a version number is required")
+						}
+
+						version := c.Args().First()
+
 						prefix := c.String("p")
 						if prefix == "" {
 							return errors.New("A prefix is required")
 						}
 
-						return features.InstallRadare2(r2pmDir, r2Dir)
+						return features.InstallRadare2(r2pmDir, r2Dir, version)
 					},
 				},
 			},

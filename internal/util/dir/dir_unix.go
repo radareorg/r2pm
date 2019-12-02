@@ -2,6 +2,11 @@
 
 package dir
 
+import (
+	"os"
+	"path/filepath"
+)
+
 func platformPrefix() string {
-	return "/usr/local/share"
+	return filepath.Join(os.Getenv("HOME"), "bin", "prefix")
 }

@@ -29,7 +29,13 @@ func TestRadare2(t *testing.T) {
 	defer os.RemoveAll(prefix)
 
 	t.Run("InstallRadare2", func(t *testing.T) {
-		if err := s.InstallRadare2(prefix); err != nil {
+		version := os.Getenv("R2_VERSION")
+
+		if version == "" {
+			t.Fatal("The r2 version must be defined")
+		}
+
+		if err := s.InstallRadare2(prefix, version); err != nil {
 			t.Fatal(err)
 		}
 
