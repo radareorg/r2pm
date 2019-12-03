@@ -54,6 +54,14 @@ jobs:
       run: ./r2pm_c init
       env: {R2PM_DEBUG: 1}
 
+    - name: Dump runner context
+      env: {RUNNER_CONTEXT: ${{ toJson(runner) }}}
+      run: echo "$RUNNER_CONTEXT"
+
+    - name: Set LD_LIBRARY_PATH on Linux
+      run: export LD_LIBRARY_PATH=.
+      # if: 
+
     - name: Check that r2dec is available
       run: ./r2pm_c list-available | grep -q r2dec
       env: {R2PM_DEBUG: 1}
