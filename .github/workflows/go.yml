@@ -52,7 +52,7 @@ jobs:
         uses: crazy-max/ghaction-chocolatey@v1
         with:
           args: install mingw
-        if: runner.os == Windows
+        if: runner.os == 'Windows'
 
       - name: Build the C binary
         run: make r2pm_c
