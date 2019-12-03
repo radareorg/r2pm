@@ -47,6 +47,8 @@ script:
   - make r2pm
   - ./r2pm --debug init
   # r2dec must be present in the database
+  # TODO remove after debugging
+  - ./r2pm --debug search dec
   - ./r2pm --debug search dec | grep -q Decompiler
   - ./r2pm --debug install -f test/test.yaml
   - ./r2pm --debug list installed | grep -q test
