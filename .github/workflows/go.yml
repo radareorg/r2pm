@@ -6,13 +6,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-        - macOS-latest
-        - ubuntu-latest
-        - windows-latest
+    runs-on: [macOs-latest, ubuntu-latest, windows-latest]
     steps:
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
@@ -27,7 +21,9 @@ jobs:
       run: make r2pm
 
   test:
+    name: Test
     needs: build
+    runs-on: [macOs-latest, ubuntu-latest, windows-latest]
 
     steps:
     - name: Run unit tests
