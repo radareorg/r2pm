@@ -1,3 +1,4 @@
+---
 name: Go
 on:
   pull_request:
@@ -13,59 +14,59 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-    - name: Set up Go 1.13
-      uses: actions/setup-go@v1
-      with:
-        go-version: 1.13
-      id: go
+      - name: Set up Go 1.13
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+        id: go
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v1
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v1
 
-    # Go binary
+      # Go binary
 
-    - name: Run unit tests
-      run: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+      - name: Run unit tests
+        run: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
 
-    - name: Build the Go binary
-      run: make r2pm
+      - name: Build the Go binary
+        run: make r2pm
 
-    - name: Initialize the database
-      run: ./r2pm --debug init
+      - name: Initialize the database
+        run: ./r2pm --debug init
 
-    - name: Make sure r2dec is present in the database
-      run: ./r2pm --debug search dec | grep -q 'converts asm to pseudo-C code'
+      - name: Make sure r2dec is present in the database
+        run: ./r2pm --debug search dec | grep -q 'converts asm to pseudo-C code'
 
-    - name: Install from a package file
-      run: ./r2pm --debug install -f test/test.yaml
+      - name: Install from a package file
+        run: ./r2pm --debug install -f test/test.yaml
 
-    - name: Check that the package above was correctly installed
-      run: ./r2pm --debug list installed | grep -q test
+      - name: Check that the package above was correctly installed
+        run: ./r2pm --debug list installed | grep -q test
 
-    - name: Delete the local database
-      run: ./r2pm --debug delete
+      - name: Delete the local database
+        run: ./r2pm --debug delete
 
-    # C binary
+      # C binary
 
-    - name: Build the C binary
-      run: make r2pm_c
+      - name: Build the C binary
+        run: make r2pm_c
 
-    - name: Initialize the database
-      run: ./r2pm_c init
-      env: {R2PM_DEBUG: 1}
+      - name: Initialize the database
+        run: ./r2pm_c init
+        env: {R2PM_DEBUG: 1}
 
-    - name: Dump runner context
-      env: {RUNNER_CONTEXT: ${{ toJson(runner) }}}
-      run: echo "$RUNNER_CONTEXT"
+      - name: Dump runner context
+        run: echo "$RUNNER_CONTEXT"
+        env: {RUNNER_CONTEXT: "${{ toJson(runner) }}"}
 
-    - name: Set LD_LIBRARY_PATH on Linux
-      run: export LD_LIBRARY_PATH=.
-      # if: 
+      - name: Set LD_LIBRARY_PATH on Linux
+        run: export LD_LIBRARY_PATH=.
+        # if:
 
-    - name: Check that r2dec is available
-      run: ./r2pm_c list-available | grep -q r2dec
-      env: {R2PM_DEBUG: 1}
+      - name: Check that r2dec is available
+        run: ./r2pm_c list-available | grep -q r2dec
+        env: {R2PM_DEBUG: 1}
 
-    - name: Delete the local database
-      run: ./r2pm_c delete
-      env: {R2PM_DEBUG: 1}
+      - name: Delete the local database
+        run: ./r2pm_c delete
+        env: {R2PM_DEBUG: 1}
