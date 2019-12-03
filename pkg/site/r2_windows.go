@@ -21,7 +21,7 @@ func (s Site) InstallRadare2(prefix, version string) error {
 	}
 	defer fd.Close()
 
-	log.Printf("Downloading %s into %s ", fd.Name(), url)
+	log.Printf("Downloading %s into %s ", url, fd.Name())
 
 	res, err := http.Get(url)
 	if err != nil {

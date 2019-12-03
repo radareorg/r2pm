@@ -26,7 +26,11 @@ matrix:
   include:
     # beta now
     - os: windows
-      env: CC=gcc
+      env:
+        - CC=gcc
+        # 4.0.0 does not extract properly
+        # https://t.me/radare/182618
+        - R2_VERSION=3.9.0
       before_script: choco install make mingw
     # - os: windows
     #   env: CC=clang-cl
