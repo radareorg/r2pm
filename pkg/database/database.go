@@ -12,7 +12,7 @@ import (
 
 const (
 	dbSubdir = "db"
-	repoName = "radare2-pm"
+	repoName = "r2pm-db"
 )
 
 type Database struct {
