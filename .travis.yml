@@ -47,7 +47,7 @@ script:
   - make r2pm
   - ./r2pm --debug init
   # r2dec must be present in the database
-  - ./r2pm --debug search dec | grep -q Decompiler
+  - ./r2pm --debug search dec | grep -q 'converts asm to pseudo-C code'
   - ./r2pm --debug install -f test/test.yaml
   - ./r2pm --debug list installed | grep -q test
   - ./r2pm --debug delete
