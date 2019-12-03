@@ -48,6 +48,11 @@ jobs:
 
       # C binary
 
+        - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+
       - name: Install GCC on Windows
         uses: crazy-max/ghaction-chocolatey@v1
         with:
