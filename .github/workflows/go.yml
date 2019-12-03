@@ -43,9 +43,21 @@ jobs:
       run: ./r2pm --debug list installed | grep -q test
 
     - name: Delete the local database
-      run: ./r2pm --debug deleteo
+      run: ./r2pm --debug delete
 
     # C binary
 
     - name: Build the C binary
       run: make r2pm_c
+
+    - name: Initialize the database
+      run: ./r2pm_c init
+      env: {R2PM_DEBUG: 1}
+
+    - name: Check that r2dec is available
+      run: ./r2pm_c list-available | grep -q r2dec
+      env: {R2PM_DEBUG: 1}
+
+    - name: Delete the local database
+      run: ./r2pm_c delete
+      env: {R2PM_DEBUG: 1}
