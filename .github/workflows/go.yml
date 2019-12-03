@@ -51,22 +51,20 @@ jobs:
       - name: Build the C binary
         run: make r2pm_c
 
-      - name: Dump runner context
-        run: echo "$RUNNER_CONTEXT"
-        env: {RUNNER_CONTEXT: "${{ toJson(runner) }}"}
-
-      - name: Set LD_LIBRARY_PATH on Linux
-        run: export LD_LIBRARY_PATH=.
-        # if:
-
       - name: Initialize the database
         run: ./r2pm_c init
-        env: {R2PM_DEBUG: 1}
+        env:
+          LD_LIBRARY_PATH: . # for Linux
+          R2PM_DEBUG: 1
 
       - name: Check that r2dec is available
         run: ./r2pm_c list-available | grep -q r2dec
-        env: {R2PM_DEBUG: 1}
+        env:
+          LD_LIBRARY_PATH: . # for Linux
+          R2PM_DEBUG: 1
 
       - name: Delete the local database
         run: ./r2pm_c delete
-        env: {R2PM_DEBUG: 1}
+        env:
+          LD_LIBRARY_PATH: . # for Linux
+          R2PM_DEBUG: 1
