@@ -22,21 +22,13 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1
 
-    - name: Build the Go binary
-      run: make r2pm
+    # Go binary
 
-  test:
-    name: Test
-    needs: build
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-
-    steps:
     - name: Run unit tests
       run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+    - name: Build the Go binary
+      run: make r2pm
 
     - name: Initialize the database
       run: ./r2pm --debug init
@@ -44,3 +36,16 @@ jobs:
     - name: Make sure r2dec is present in the database
       run: ./r2pm --debug search dec | grep -q 'converts asm to pseudo-C code'
 
+    - name: Install from a package file
+      run: ./r2pm --debug install -f test/test.yaml
+
+    - name: Check that the package above was correctly installed
+      run: ./r2pm --debug list installed | grep -q test
+
+    - name: Delete the local database
+      run: ./r2pm --debug deleteo
+
+    # C binary
+
+    - name: Build the C binary
+      run: make r2pm_c
