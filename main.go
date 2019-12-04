@@ -99,13 +99,13 @@ func main() {
 
 				return features.Install(r2pmDir, packageName)
 			},
-			Subcommands: []cli.Command{
+			Subcommands: []*cli.Command{
 				{
 					Name:      "radare2",
 					Usage:     "install radare2",
 					ArgsUsage: "VERSION",
 					Flags: []cli.Flag{
-						cli.StringFlag{
+						&cli.StringFlag{
 							Name:  "p",
 							Usage: "radare2's configure --prefix",
 							Value: r2Dir,
@@ -183,7 +183,7 @@ func main() {
 
 				return features.Uninstall(r2pmDir, packageName)
 			},
-			Subcommands: []cli.Command{
+			Subcommands: []*cli.Command{
 				{
 					Name:  "radare2",
 					Usage: "uninstall radare2",
