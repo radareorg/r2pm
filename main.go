@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -27,6 +28,7 @@ func getArgumentOrExit(c *cli.Context) string {
 }
 
 func main() {
+	r2Dir := dir.R2Dir()
 	r2pmDir := dir.SiteDir()
 
 	listAvailablePackages := func(c *cli.Context) error {
@@ -97,6 +99,34 @@ func main() {
 
 				return features.Install(r2pmDir, packageName)
 			},
+			Subcommands: []*cli.Command{
+				{
+					Name:      "radare2",
+					Usage:     "install radare2",
+					ArgsUsage: "VERSION",
+					Flags: []cli.Flag{
+						&cli.StringFlag{
+							Name:  "p",
+							Usage: "radare2's configure --prefix",
+							Value: r2Dir,
+						},
+					},
+					Action: func(c *cli.Context) error {
+						if c.NArg() != 1 {
+							return errors.New("a version number is required")
+						}
+
+						version := c.Args().First()
+
+						prefix := c.String("p")
+						if prefix == "" {
+							return errors.New("A prefix is required")
+						}
+
+						return features.InstallRadare2(r2pmDir, r2Dir, version)
+					},
+				},
+			},
 		},
 		{
 			Name:    "list",
@@ -152,6 +182,15 @@ func main() {
 				packageName := getArgumentOrExit(c)
 
 				return features.Uninstall(r2pmDir, packageName)
+			},
+			Subcommands: []*cli.Command{
+				{
+					Name:  "radare2",
+					Usage: "uninstall radare2",
+					Action: func(c *cli.Context) error {
+						return features.UninstallRadare2(r2pmDir, r2Dir)
+					},
+				},
 			},
 		},
 		{

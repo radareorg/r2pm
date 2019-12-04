@@ -34,7 +34,7 @@ func Open(path string) (Repository, error) {
 
 	args := []string{"--git-dir", filepath.Join(absPath, ".git"), "rev-parse"}
 
-	// Check that there absPath contains a .git Repository
+	// Check that absPath contains a .git Repository
 	return Repository(path), Run(args, "")
 }
 
@@ -42,9 +42,17 @@ func (r Repository) AddRemote(name, url string) error {
 	return r.Run("remote", "add", name, url)
 }
 
-func (r Repository) Pull(remote, branch string) error {
+func (r Repository) Checkout(ref string) error {
+	return r.Run("checkout", ref)
+}
+
+func (r Repository) Fetch() error {
+	return r.Run("fetch")
+}
+
+func (r Repository) Pull(remote, branch string, opts []string) error {
 	// Do not send the remote and branch names if they are empty
-	args := []string{"pull"}
+	args := append([]string{"pull"}, opts...)
 
 	if remote != "" {
 		args = append(args, remote)

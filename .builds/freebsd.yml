@@ -1,17 +1,18 @@
 image: freebsd/latest
 packages:
-    - devel/meson
-    - devel/pkgconf
     - devel/gmake
     - devel/llvm
     - lang/go
-    - ftp/wget
 environment:
-    CXX: clang++
     CC: clang
+    HOST_CC: clang # Required to build radare2
+    R2_VERSION: 4.0.0 # Required for the integration tests
 sources:
     - https://github.com/radareorg/r2pm
 tasks:
     - build: |
         cd r2pm
         gmake
+    - test: |
+        cd r2pm
+        gmake integration-tests
