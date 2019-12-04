@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/radareorg/r2pm/internal/features"
 	"github.com/radareorg/r2pm/internal/util/dir"
@@ -51,10 +51,10 @@ func main() {
 	app.Version = "0.0.1"
 
 	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:   flagNameDebug,
-			Usage:  "enable debug logs",
-			EnvVar: features.DebugEnvVar,
+		&cli.BoolFlag{
+			Name:    flagNameDebug,
+			Usage:   "enable debug logs",
+			EnvVars: []string{features.DebugEnvVar},
 		},
 	}
 
@@ -63,7 +63,7 @@ func main() {
 		return nil
 	}
 
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:  "delete",
 			Usage: "delete the local package database",
@@ -84,7 +84,7 @@ func main() {
 			Usage:     "install a package",
 			ArgsUsage: "[PACKAGE]",
 			Flags: []cli.Flag{
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "f",
 					Usage: "install a package described by a local file",
 				},
@@ -133,7 +133,7 @@ func main() {
 			Aliases: []string{"ls"},
 			Usage:   "list packages",
 			Action:  listAvailablePackages,
-			Subcommands: []cli.Command{
+			Subcommands: []*cli.Command{
 				{
 					Name:   "available",
 					Usage:  "list all the available packages",
@@ -198,7 +198,7 @@ func main() {
 			Usage:     "upgrade (uninstall and reinstall) a package",
 			ArgsUsage: "[PACKAGE]",
 			Flags: []cli.Flag{
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "a, all",
 					Usage: "upgrade all packages",
 				},
