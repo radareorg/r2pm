@@ -11,16 +11,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os:
+          - macos-latest-clang
+          - ubuntu-latest-clang
+          - ubuntu-latest-gcc
+          - windows-latest-gcc
         include:
-          - os: macos-latest
-            env: {CC: clang}
-          - os: ubuntu-latest
-            env: {CC: clang}
-          - os: ubuntu-latest
-            env: {CC: gcc}
-          - os: windows-latest
-            env: {CC: gcc}
+          - os: macos-latest-clang
+            cc: clang
+          - os: ubuntu-latest-clang
+            cc: clang
+          - os: ubuntu-latest-gcc
+            cc: gcc
+          - os: windows-latest-gcc
+            cc: gcc
 
     steps:
       - name: Set up Go 1.13
@@ -57,19 +61,9 @@ jobs:
 
       # C binary
 
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$RUNNER_CONTEXT"
-
-      - name: Install GCC on Windows
-        uses: crazy-max/ghaction-chocolatey@v1
-        with:
-          args: install mingw
-        if: runner.os == 'Windows'
-
       - name: Build the C binary
         run: make r2pm_c
+        env: {CC: "${{matrix.cc}}"}
 
       - name: Initialize the database
         run: ./r2pm_c init
