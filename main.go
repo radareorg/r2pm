@@ -1,11 +1,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v2"
 
 	"github.com/radareorg/r2pm/internal/features"
 	"github.com/radareorg/r2pm/internal/util/dir"
@@ -27,6 +28,7 @@ func getArgumentOrExit(c *cli.Context) string {
 }
 
 func main() {
+	r2Dir := dir.R2Dir()
 	r2pmDir := dir.SiteDir()
 
 	listAvailablePackages := func(c *cli.Context) error {
@@ -49,10 +51,10 @@ func main() {
 	app.Version = "0.0.1"
 
 	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:   flagNameDebug,
-			Usage:  "enable debug logs",
-			EnvVar: features.DebugEnvVar,
+		&cli.BoolFlag{
+			Name:    flagNameDebug,
+			Usage:   "enable debug logs",
+			EnvVars: []string{features.DebugEnvVar},
 		},
 	}
 
@@ -61,7 +63,7 @@ func main() {
 		return nil
 	}
 
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:  "delete",
 			Usage: "delete the local package database",
@@ -82,7 +84,7 @@ func main() {
 			Usage:     "install a package",
 			ArgsUsage: "[PACKAGE]",
 			Flags: []cli.Flag{
-				cli.StringFlag{
+				&cli.StringFlag{
 					Name:  "f",
 					Usage: "install a package described by a local file",
 				},
@@ -97,13 +99,41 @@ func main() {
 
 				return features.Install(r2pmDir, packageName)
 			},
+			Subcommands: []*cli.Command{
+				{
+					Name:      "radare2",
+					Usage:     "install radare2",
+					ArgsUsage: "VERSION",
+					Flags: []cli.Flag{
+						&cli.StringFlag{
+							Name:  "p",
+							Usage: "radare2's configure --prefix",
+							Value: r2Dir,
+						},
+					},
+					Action: func(c *cli.Context) error {
+						if c.NArg() != 1 {
+							return errors.New("a version number is required")
+						}
+
+						version := c.Args().First()
+
+						prefix := c.String("p")
+						if prefix == "" {
+							return errors.New("A prefix is required")
+						}
+
+						return features.InstallRadare2(r2pmDir, r2Dir, version)
+					},
+				},
+			},
 		},
 		{
 			Name:    "list",
 			Aliases: []string{"ls"},
 			Usage:   "list packages",
 			Action:  listAvailablePackages,
-			Subcommands: []cli.Command{
+			Subcommands: []*cli.Command{
 				{
 					Name:   "available",
 					Usage:  "list all the available packages",
@@ -153,13 +183,22 @@ func main() {
 
 				return features.Uninstall(r2pmDir, packageName)
 			},
+			Subcommands: []*cli.Command{
+				{
+					Name:  "radare2",
+					Usage: "uninstall radare2",
+					Action: func(c *cli.Context) error {
+						return features.UninstallRadare2(r2pmDir, r2Dir)
+					},
+				},
+			},
 		},
 		{
 			Name:      "upgrade",
 			Usage:     "upgrade (uninstall and reinstall) a package",
 			ArgsUsage: "[PACKAGE]",
 			Flags: []cli.Flag{
-				cli.BoolFlag{
+				&cli.BoolFlag{
 					Name:  "a, all",
 					Usage: "upgrade all packages",
 				},

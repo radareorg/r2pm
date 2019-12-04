@@ -52,7 +52,7 @@ func (d Database) InitOrUpdate() error {
 	log.Printf("Pulling the last revision from %s/%s", remoteName, remoteBranch)
 
 	// assume origin / master
-	if err := repo.Pull(remoteName, remoteBranch); err != nil {
+	if err := repo.Pull(remoteName, remoteBranch, nil); err != nil {
 		return fmt.Errorf("could not pull the latest revision: %w", err)
 	}
 

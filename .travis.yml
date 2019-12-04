@@ -7,7 +7,9 @@ language: go
 
 env:
   # Travis clones the repo in $GOPATH so we need to explicitely enable Go modules.
-  global: GO111MODULE=on
+  global:
+    - GO111MODULE=on
+    - R2_VERSION=4.0.0
   matrix:
     - CC=gcc
     - CC=clang
@@ -24,7 +26,11 @@ matrix:
   include:
     # beta now
     - os: windows
-      env: CC=gcc
+      env:
+        - CC=gcc
+        # 4.0.0 does not extract properly
+        # https://t.me/radare/182618
+        - R2_VERSION=3.9.0
       before_script: choco install make mingw
     # - os: windows
     #   env: CC=clang-cl
@@ -47,10 +53,14 @@ script:
   - make r2pm
   - ./r2pm --debug init
   # r2dec must be present in the database
-  - ./r2pm --debug search dec | grep -q Decompiler
+  - ./r2pm --debug search dec | grep -q 'converts asm to pseudo-C code'
+  - ./r2pm --debug install radare2 ${R2_VERSION}
   - ./r2pm --debug install -f test/test.yaml
   - ./r2pm --debug list installed | grep -q test
   - ./r2pm --debug delete
+
+  # run the integration tests
+  - make integration-tests
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

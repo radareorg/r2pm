@@ -2,10 +2,14 @@
 
 package dir
 
-import "testing"
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
 
 func testSiteDir(t *testing.T) {
-	if s := SiteDir(); s != "/usr/local/share/RadareOrg/r2pm" {
+	if s := SiteDir(); s != filepath.Join(os.Getenv("HOME"), "bin", "prefix", "RadareOrg", "r2pm") {
 		t.Fatal(s)
 	}
 }
