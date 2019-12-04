@@ -17,13 +17,17 @@ jobs:
           - ubuntu-latest-gcc
           - windows-latest-gcc
         include:
-          - os: macos-latest-clang
+          - name: macos-latest-clang
+            os: macos-latest
             cc: clang
-          - os: ubuntu-latest-clang
+          - name: ubuntu-latest-clang
+            os: ubuntu-latest
             cc: clang
-          - os: ubuntu-latest-gcc
+          - name: ubuntu-latest-gcc
+            os: ubuntu-latest
             cc: gcc
-          - os: windows-latest-gcc
+          - name: windows-latest-gcc
+            os: windows-latest
             cc: gcc
 
     steps:
