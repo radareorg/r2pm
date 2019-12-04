@@ -87,6 +87,10 @@ jobs:
           LD_LIBRARY_PATH: .  # for Linux
           R2PM_DEBUG: 1
 
+      - name: Run integration tests
+        run: make integration-tests
+        env: {R2_VERSION: 4.0.0}
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
