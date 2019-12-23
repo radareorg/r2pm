@@ -3,7 +3,7 @@
 This tool is a cross platform package manager for the reverse engineering
 framework radare2.
 
-It is a rewrite in Go of the [original Shell r2pm script](https://github.com/radare/radare2/blob/master/binr/r2pm/r2pm).
+It is a rewrite in Go of the [original Shell r2pm script](https://github.com/radareorg/radare2/blob/master/binr/r2pm/r2pm).
 
 This tool is still a work in progress.
 
