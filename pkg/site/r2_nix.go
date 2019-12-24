@@ -36,7 +36,7 @@ func (s Site) InstallRadare2(prefix, version string) error {
 			return fmt.Errorf("could not run git init: %v", err)
 		}
 
-		origin := "https://github.com/radare/radare2"
+		origin := "https://github.com/radareorg/radare2"
 
 		log.Print("Setting the origin to " + origin)
 		if err = repo.AddRemote("origin", origin); err != nil {

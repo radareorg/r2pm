@@ -17,6 +17,7 @@ import (
 type Info struct {
 	Name          string
 	Type          string
+	Tags          []string
 	Repo          string
 	Desc          string
 	InstallCmds   []string `yaml:"install"`
