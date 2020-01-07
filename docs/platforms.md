@@ -1,6 +1,7 @@
 # Platforms
 
-`r2pm` supports installing packages on the following operating systems, all running the `amd64` architecture:
-- Windows 7 and later
+`r2pm` supports the currently supported version of the following operating systems, all running the `amd64` architecture:
+- FreeBSD
 - Linux
-- macOS 10.14+
+- macOS
+- Windows
