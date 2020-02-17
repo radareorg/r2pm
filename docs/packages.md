@@ -22,7 +22,6 @@ install:
     source:
       type: zip
       url: http://a-random.url/zip-archive.zip
-    # commands: []  # Unlikely for Windows
     out:
       - path: bin/exe1  # relative to the extracted directory
         type: exe
@@ -37,7 +36,6 @@ install:
     commands:
       - './configure --prefix {{ .DestPath }}'
       - make
-      - make install  # avoid this, as r2pm will not manage those files unless they are also specified in the 'out' section
     out:
       - path: bin/exe1
         type: exe
