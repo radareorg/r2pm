@@ -223,6 +223,6 @@ func main() {
 
 func printPackageSlice(packages []r2package.Info) {
 	for _, p := range packages {
-		fmt.Printf("%s: %s\n", p.Name, p.Desc)
+		fmt.Printf("%s: %s\n", p.Name, p.Description)
 	}
 }

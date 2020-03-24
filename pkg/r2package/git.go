@@ -14,17 +14,17 @@ type gitInstaller struct {
 }
 
 func (g gitInstaller) install(inDir string) error {
-	const (
-		remoteName   = "origin"
-		remoteBranch = "master"
-	)
+	// TODO: don't hardcode Linux
+	platform := g.info.Install.Linux
+	remoteName := "origin"
+	remoteBranch := platform.Source.Ref
 
 	repo, err := git.Init(inDir, false)
 	if err != nil {
 		return fmt.Errorf("could not init the repository: %w", err)
 	}
 
-	if err := repo.AddRemote(remoteName, g.info.Repo); err != nil {
+	if err := repo.AddRemote(remoteName, platform.Source.Repo); err != nil {
 		return fmt.Errorf("could not add the remote: %w", err)
 	}
 
@@ -32,7 +32,7 @@ func (g gitInstaller) install(inDir string) error {
 		return fmt.Errorf("could not git pull: %w", err)
 	}
 
-	for idx, line := range g.info.InstallCmds {
+	for idx, line := range platform.Commands {
 		fields := strings.Fields(line)
 
 		cmd := exec.Command(fields[0], fields[1:]...)
@@ -51,7 +51,9 @@ func (g gitInstaller) install(inDir string) error {
 }
 
 func (g gitInstaller) uninstall(fromDir string) error {
-	for idx, line := range g.info.UninstallCmds {
+	// TODO: don't hardcode Linux
+	platform := g.info.Install.Linux
+	for idx, line := range platform.Commands {
 		fields := strings.Fields(line)
 
 		cmd := exec.Command(fields[0], fields[1:]...)

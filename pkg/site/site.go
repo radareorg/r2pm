@@ -42,7 +42,7 @@ func (s Site) Database() database.Database {
 func (s Site) InstallPackage(name string) error {
 	ifile, err := s.Database().GetInfoFile(name)
 	if err != nil {
-		return fmt.Errorf("could not find the info file: %w", err)
+		return fmt.Errorf("error while parsing the info file: %w", err)
 	}
 
 	return s.installFromInfoFile(ifile)
@@ -69,14 +69,17 @@ func (s Site) UninstallPackage(name string) error {
 		return fmt.Errorf("could not find %s as an installed package", name)
 	}
 
-	dir, err := s.getPackageSubDir(ifile.Type)
+	// TODO: don't hardcode Linux
+	platform := ifile.Install.Linux
+
+	dir, err := s.getPackageSubDir(platform.Source.Type)
 	if err != nil {
 		return fmt.Errorf("could not determine where %s is installed: %w", name, err)
 	}
 
 	installedDir := filepath.Join(dir, ifile.Name)
 
-	if err := ifile.Uninstall(installedDir); err != nil {
+	if err := ifile.DoUninstall(installedDir); err != nil {
 		return fmt.Errorf("could not uninstall %s: %w", name, err)
 	}
 
@@ -152,7 +155,9 @@ func (s Site) gitSubDir() string {
 }
 
 func (s Site) installFromInfoFile(ifile r2package.InfoFile) error {
-	dir, err := s.getPackageSubDir(ifile.Type)
+	// TODO: don't hardcode Linux
+	platform := ifile.Info.Install.Linux
+	dir, err := s.getPackageSubDir(platform.Source.Type)
 	if err != nil {
 		return fmt.Errorf("could not determine where to install %s: %w", ifile.Name, err)
 	}
@@ -163,7 +168,7 @@ func (s Site) installFromInfoFile(ifile r2package.InfoFile) error {
 		return fmt.Errorf("could not create %s: %w", dir, err)
 	}
 
-	if err := ifile.Install(dir); err != nil {
+	if err := ifile.DoInstall(dir); err != nil {
 		// delete the directory that we just created
 		os.RemoveAll(dir)
 

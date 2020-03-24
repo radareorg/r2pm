@@ -16,15 +16,22 @@ import (
 
 type Info struct {
 	Name          string
-	Type          string
-	Tags          []string
-	Repo          string
-	Desc          string
-	InstallCmds   []string `yaml:"install"`
-	UninstallCmds []string `yaml:"uninstall"`
+	Version       string
+	Description   string
+	Install struct {
+		Linux struct {
+			Source struct {
+				Type    string
+				Repo    string
+				Ref     string
+			}
+			Commands []string
+		}
+	}
+	// TODO: windows, macos, uninstall, out, tags
 }
 
-func (i Info) Install(inDir string) error {
+func (i Info) DoInstall(inDir string) error {
 	installer, err := i.installer()
 	if err != nil {
 		return err
@@ -33,7 +40,7 @@ func (i Info) Install(inDir string) error {
 	return installer.install(inDir)
 }
 
-func (i Info) Uninstall(inDir string) error {
+func (i Info) DoUninstall(inDir string) error {
 	installer, err := i.installer()
 	if err != nil {
 		return err
@@ -43,11 +50,15 @@ func (i Info) Uninstall(inDir string) error {
 }
 
 func (i Info) installer() (installer, error) {
-	switch i.Type {
+	// TODO: don't hardcode Linux
+	platform := i.Install.Linux
+	switch platform.Source.Type {
 	case "git":
 		return gitInstaller{i}, nil
+	// TODO: zip
 	default:
-		return nil, fmt.Errorf("%q: unhandled package type", i.Type)
+		return nil, fmt.Errorf("%q: unhandled package type",
+					platform.Source.Type)
 	}
 }
 
