@@ -18,7 +18,8 @@ type Info struct {
 	Name          string
 	Version       string
 	Description   string
-	Install struct {
+	// avoid conflict with i.Install()
+	InstallConf struct {
 		Linux struct {
 			Source struct {
 				Type    string
@@ -27,11 +28,11 @@ type Info struct {
 			}
 			Commands []string
 		}
-	}
+	} `yaml:"install"`
 	// TODO: windows, macos, uninstall, out, tags
 }
 
-func (i Info) DoInstall(inDir string) error {
+func (i Info) Install(inDir string) error {
 	installer, err := i.installer()
 	if err != nil {
 		return err
@@ -40,7 +41,7 @@ func (i Info) DoInstall(inDir string) error {
 	return installer.install(inDir)
 }
 
-func (i Info) DoUninstall(inDir string) error {
+func (i Info) Uninstall(inDir string) error {
 	installer, err := i.installer()
 	if err != nil {
 		return err
@@ -51,7 +52,7 @@ func (i Info) DoUninstall(inDir string) error {
 
 func (i Info) installer() (installer, error) {
 	// TODO: don't hardcode Linux
-	platform := i.Install.Linux
+	platform := i.InstallConf.Linux
 	switch platform.Source.Type {
 	case "git":
 		return gitInstaller{i}, nil
