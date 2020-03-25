@@ -16,7 +16,7 @@ type gitInstaller struct {
 func (g gitInstaller) install(inDir string) error {
 	// TODO: don't hardcode Linux
 	platform := g.info.Install.Linux
-	remoteName := "origin"
+	const remoteName = "origin"
 	remoteBranch := platform.Source.Ref
 
 	repo, err := git.Init(inDir, false)
