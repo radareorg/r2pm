@@ -14,8 +14,11 @@ type gitInstaller struct {
 }
 
 func (g gitInstaller) install(inDir string) error {
-	// TODO: don't hardcode Linux
-	platform := g.info.InstallConf.Linux
+	platform, err := g.info.InstallPlatform()
+	if err != nil {
+		return err
+	}
+
 	const remoteName = "origin"
 	remoteBranch := platform.Source.Ref
 
@@ -51,8 +54,11 @@ func (g gitInstaller) install(inDir string) error {
 }
 
 func (g gitInstaller) uninstall(fromDir string) error {
-	// TODO: don't hardcode Linux
-	platform := g.info.InstallConf.Linux
+	platform, err := g.info.InstallPlatform()
+	if err != nil {
+		return err
+	}
+
 	for idx, line := range platform.Commands {
 		fields := strings.Fields(line)
 

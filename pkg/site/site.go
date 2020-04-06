@@ -69,8 +69,10 @@ func (s Site) UninstallPackage(name string) error {
 		return fmt.Errorf("could not find %s as an installed package", name)
 	}
 
-	// TODO: don't hardcode Linux
-	platform := ifile.InstallConf.Linux
+	platform, err := ifile.InstallPlatform()
+	if err != nil {
+		return err
+	}
 
 	dir, err := s.getPackageSubDir(platform.Source.Type)
 	if err != nil {
@@ -155,8 +157,11 @@ func (s Site) gitSubDir() string {
 }
 
 func (s Site) installFromInfoFile(ifile r2package.InfoFile) error {
-	// TODO: don't hardcode Linux
-	platform := ifile.Info.InstallConf.Linux
+	platform, err := ifile.Info.InstallPlatform()
+	if err != nil {
+		return err
+	}
+
 	dir, err := s.getPackageSubDir(platform.Source.Type)
 	if err != nil {
 		return fmt.Errorf("could not determine where to install %s: %w", ifile.Name, err)

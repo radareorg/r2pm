@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"gopkg.in/yaml.v2"
 )
@@ -19,6 +20,18 @@ type OutputFile struct {
 	Type	string
 }
 
+// struct for each OS (e.g. Linux, Macos, Windows)
+type Instructions struct {
+	Source struct {
+		Type	string
+		Url	string	// for zip
+		Repo	string	// for git
+		Ref	string
+	}
+	Commands []string
+	Out []OutputFile `yaml:"out,flow"`	// for zip
+}
+
 type Info struct {
 	Name		string
 	Version		string
@@ -26,38 +39,28 @@ type Info struct {
 	Tags		[]string
 	// avoid conflict with i.Install()
 	InstallConf struct {
-		Linux struct {
-			Source struct {
-				Type	string
-				Url	string	// for zip
-				Repo	string	// for git
-				Ref	string
-			}
-			Commands []string
-			Out []OutputFile `yaml:"out,flow"`	// for zip
-		}
-		Macos struct {
-			Source struct {
-				Type	string
-				Url	string
-				Repo	string
-				Ref	string
-			}
-			Commands []string
-			Out []OutputFile `yaml:"out,flow"`
-		}
-		Windows struct {
-			Source struct {
-				Type	string
-				Url	string
-				Repo	string
-				Ref	string
-			}
-			Commands []string
-			Out []OutputFile `yaml:"out,flow"`
-		}
+		Linux	Instructions
+		Windows	Instructions
+		Macos	Instructions
 	} `yaml:"install"`
-	// TODO: windows, macos, uninstall, out, tags
+	// TODO: uninstall
+}
+
+
+func (i Info) InstallPlatform() (Instructions, error) {
+	// return the Instructions struct corresponding to i.InstallConf.Platform
+	switch runtime.GOOS {
+	case "android", "freebsd", "linux", "netbsd", "openbsd":
+		return i.InstallConf.Linux, nil
+	case "windows":
+		return i.InstallConf.Windows, nil
+	case "darwin":
+		return i.InstallConf.Macos, nil
+	default:
+		// can't return nil for the struct so just return Linux
+		return i.InstallConf.Linux, fmt.Errorf("Unsupported platform: %s",
+							runtime.GOOS)
+	}
 }
 
 func (i Info) Install(inDir string) error {
@@ -79,8 +82,11 @@ func (i Info) Uninstall(inDir string) error {
 }
 
 func (i Info) installer() (installer, error) {
-	// TODO: don't hardcode Linux
-	platform := i.InstallConf.Linux
+	platform, err := i.InstallPlatform()
+	if err != nil {
+		return nil, err
+	}
+
 	switch platform.Source.Type {
 	case "git":
 		return gitInstaller{i}, nil
