@@ -14,19 +14,47 @@ import (
 // Info
 //
 
+type OutputFile struct {
+	Path	string
+	Type	string
+}
+
 type Info struct {
-	Name          string
-	Version       string
-	Description   string
+	Name		string
+	Version		string
+	Description	string
+	Tags		[]string
 	// avoid conflict with i.Install()
 	InstallConf struct {
 		Linux struct {
 			Source struct {
-				Type    string
-				Repo    string
-				Ref     string
+				Type	string
+				Url	string	// for zip
+				Repo	string	// for git
+				Ref	string
 			}
 			Commands []string
+			Out []OutputFile `yaml:"out,flow"`	// for zip
+		}
+		Macos struct {
+			Source struct {
+				Type	string
+				Url	string
+				Repo	string
+				Ref	string
+			}
+			Commands []string
+			Out []OutputFile `yaml:"out,flow"`
+		}
+		Windows struct {
+			Source struct {
+				Type	string
+				Url	string
+				Repo	string
+				Ref	string
+			}
+			Commands []string
+			Out []OutputFile `yaml:"out,flow"`
 		}
 	} `yaml:"install"`
 	// TODO: windows, macos, uninstall, out, tags

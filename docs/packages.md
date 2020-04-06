@@ -15,6 +15,7 @@ A plugin file is a text file in the YAML format that contains various metadata a
 name: my-package  # must be unique and equals to the file name
 version: 1.2.3
 description: Some description   
+tags: [tag1, tag2]
 
 install:
 
