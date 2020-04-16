@@ -20,7 +20,7 @@ type OutputFile struct {
 	Type	string
 }
 
-// struct for each OS (e.g. Linux, Macos, Windows)
+// struct for each OS (e.g. Linux, MacOS, Windows)
 type Instructions struct {
 	Source struct {
 		Type	string
@@ -41,7 +41,7 @@ type Info struct {
 	InstallConf struct {
 		Linux	Instructions
 		Windows	Instructions
-		Macos	Instructions
+		MacOS	Instructions
 	} `yaml:"install"`
 	// TODO: uninstall
 }
@@ -55,7 +55,7 @@ func (i Info) InstallPlatform() (Instructions, error) {
 	case "windows":
 		return i.InstallConf.Windows, nil
 	case "darwin":
-		return i.InstallConf.Macos, nil
+		return i.InstallConf.MacOS, nil
 	default:
 		// can't return nil for the struct so just return Linux
 		return i.InstallConf.Linux, fmt.Errorf("Unsupported platform: %s",
