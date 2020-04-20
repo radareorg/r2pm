@@ -50,7 +50,7 @@ type Info struct {
 func (i Info) InstallPlatform() (Instructions, error) {
 	// return the Instructions struct corresponding to i.InstallConf.Platform
 	switch runtime.GOOS {
-	case "android", "freebsd", "linux", "netbsd", "openbsd":
+	case "linux":
 		return i.InstallConf.Linux, nil
 	case "windows":
 		return i.InstallConf.Windows, nil
