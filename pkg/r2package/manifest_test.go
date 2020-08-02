@@ -50,7 +50,7 @@ func TestManifest_Verify(t *testing.T) {
 	})
 }
 
-func TestgetFetcher(t *testing.T) {
+func Test_getFetcher(t *testing.T) {
 	t.Run("git", func(t *testing.T) {
 		const (
 			ref  = "master"
@@ -164,7 +164,7 @@ install:
 	}
 }
 
-func TestosFromGOOS(t *testing.T) {
+func Test_osFromGOOS(t *testing.T) {
 	cases := []struct {
 		goos, expected string
 		returnsError   bool
@@ -194,11 +194,15 @@ func TestosFromGOOS(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.goos, func(t *testing.T) {
 			got, err := osFromGOOS(c.goos)
-			if !c.returnsError && err != nil {
+			if err != nil {
+				if c.returnsError {
+					return
+				}
+
 				t.Fatalf("Unexpected error: %got", err)
 			}
 
-			if c.goos != c.expected {
+			if got != c.expected {
 				t.Fatalf("Expected %q, got %q", c.expected, got)
 			}
 		})
