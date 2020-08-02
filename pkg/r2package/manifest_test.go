@@ -90,6 +90,14 @@ func Test_getFetcher(t *testing.T) {
 			t.Fatalf("Unexpected fetcher type %T", f)
 		}
 	})
+
+	t.Run("not-a-fetcher", func(t *testing.T) {
+		s := Source{Type: "not-a-source"}
+
+		if _, err := getFetcher(s); err == nil {
+			t.Fatal("Expected an error")
+		}
+	})
 }
 
 func TestFromYAML(t *testing.T) {
