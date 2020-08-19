@@ -45,24 +45,29 @@ func TestInstaller_Install(t *testing.T) {
 		tmpDirGetter: tmpDirGetter,
 	}
 
+	instructions := InstallInstructions{
+		Commands: []string{"command 1", "command 2"},
+		Out: []ManagedFile{
+			{
+				Path: pathOutFile1,
+				Type: "exe",
+			},
+			{
+				Path: pathOutFile2,
+				Type: "shared-lib",
+			},
+		},
+	}
+
 	m := Manifest{
 		Name:        "test-package",
 		Version:     "1.2.3",
 		Description: "A test package",
 		Install: map[string]InstallInstructions{
-			"macos": {
-				Commands: []string{"command 1", "command 2"},
-				Out: []ManagedFile{
-					{
-						Path: pathOutFile1,
-						Type: "exe",
-					},
-					{
-						Path: pathOutFile2,
-						Type: "shared-lib",
-					},
-				},
-			},
+			"freebsd": instructions,
+			"linux":   instructions,
+			"macos":   instructions,
+			"windows": instructions,
 		},
 	}
 
