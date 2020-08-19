@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os/exec"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -80,12 +81,18 @@ func TestInstaller_Install(t *testing.T) {
 	cmd2 := exec.CommandContext(ctx, "command", "2")
 	cmd2.Dir = dirTmp
 
+	srcFile1 := filepath.Join(dirTmp, pathOutFile1)
+	dstFile1 := filepath.Join(dirPlugins, pathOutFile1)
+
+	srcFile2 := filepath.Join(dirTmp, pathOutFile2)
+	dstFile2 := filepath.Join(dirPlugins, pathOutFile2)
+
 	gomock.InOrder(
 		f.EXPECT().Fetch(ctx, dirTmp),
 		e.EXPECT().Run(cmd1),
 		e.EXPECT().Run(cmd2),
-		fm.EXPECT().CopyFile(dirTmp+"/"+pathOutFile1, dirPlugins+"/"+pathOutFile1),
-		fm.EXPECT().CopyFile(dirTmp+"/"+pathOutFile2, dirPlugins+"/"+pathOutFile2),
+		fm.EXPECT().CopyFile(srcFile1, dstFile1),
+		fm.EXPECT().CopyFile(srcFile2, dstFile2),
 	)
 
 	if err := i.Install(ctx, m); err != nil {
