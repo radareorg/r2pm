@@ -9,7 +9,7 @@ This tool is still a work in progress.
 
 | CI | Badges/URL |
 |----------|---------------------------------------------------------------------|
-| **GolangCI** | https://golangci.com/r/github.com/radareorg/r2pm|
+| **GithubCI**  | [![Tests Status](https://github.com/radareorg/r2pm/workflows/Go/badge.svg)](https://github.com/radareorg/r2pm/actions?query=workflow%3AGo)|
 | **TravisCI** | [![Build Status](https://travis-ci.org/radareorg/r2pm.svg?branch=master)](https://travis-ci.org/radareorg/r2pm)|
 | **Dependabot** |[![Dependabot Enablement](https://api.dependabot.com/badges/status?host=github&repo=radareorg/r2pm)](https://github.com/radareorg/r2pm/pulls?q=is%3Aopen+is%3Apr+label%3Adependencies)|
 | **Sourcehut** | [![builds.sr.ht status](https://builds.sr.ht/~xvilka/r2pm.svg)](https://builds.sr.ht/~xvilka/r2pm?)|
