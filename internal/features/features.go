@@ -80,7 +80,12 @@ func ListAvailable(r2pmDir string) ([]r2package.Info, error) {
 		return nil, fmt.Errorf(msgCannotInitialize, err)
 	}
 
-	return s.Database().ListAvailablePackages()
+	list, err := s.Database().ListAvailablePackages()
+	if isInvalidDirectory(err) {
+		err = fmt.Errorf("the database seems to be empty. please to initialize it first.")
+	}
+
+	return list, err
 }
 
 func ListInstalled(r2pmDir string) ([]r2package.Info, error) {

@@ -35,9 +35,6 @@ func main() {
 		packages, err := features.ListAvailable(r2pmDir)
 
 		if err != nil {
-			if isInvalidDirectory(err) {
-				err = fmt.Errorf("the database seems to be empty. use `r2pm init` to initialize it.")
-			}
 			return err
 		}
 
