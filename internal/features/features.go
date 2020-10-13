@@ -82,7 +82,7 @@ func ListAvailable(r2pmDir string) ([]r2package.Info, error) {
 
 	list, err := s.Database().ListAvailablePackages()
 	if isInvalidDirectory(err) {
-		err = fmt.Errorf("the database seems to be empty. please to initialize it first.")
+		err = fmt.Errorf("the database seems to be empty. please initialize it first.")
 	}
 
 	return list, err
