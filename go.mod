@@ -3,7 +3,7 @@ module github.com/radareorg/r2pm
 go 1.15
 
 require (
-	github.com/golang/mock v1.4.4
+	github.com/golang/mock v1.5.0
 	github.com/google/go-cmp v0.5.2
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/urfave/cli/v2 v2.2.0
